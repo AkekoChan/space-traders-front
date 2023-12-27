@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useFetch = (options) => {
+const useFetch = (options = {}) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -10,21 +10,23 @@ const useFetch = (options) => {
 
     try {
       const response = await fetch(
-        `https://api.spacetraders.io/v2/${options.endpoint}`,
+        `https://api.spacetraders.io/v2/${options.endpoint || ""}`,
         {
-          method: options.method,
-          headers: options.headers,
-          body: options.body,
+          method: options.method || "GET",
+          headers: options.headers || {},
+          body: options.body || null,
         }
       );
-      const data = await response.json();
 
-      setData(data);
+      if (!response.ok) {
+        throw new Error(`Request failed with status: ${response.status}`);
+      }
 
-      setIsLoading(false);
+      const responseData = await response.json();
+      setData(responseData);
+      console.log("responseData", responseData);
     } catch (error) {
       setError(error);
-      console.log(error);
     } finally {
       setIsLoading(false);
     }
