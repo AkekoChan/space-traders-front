@@ -1,5 +1,6 @@
 import { useState, createContext, useContext, useEffect } from "react";
 import { useNavigate } from "react-router";
+import useFetch from "../hook/useFetch";
 
 const AuthContext = createContext();
 
@@ -16,6 +17,7 @@ export const AuthContextProvider = ({ children }) => {
         Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
+      body: null,
     };
 
     try {
@@ -24,19 +26,21 @@ export const AuthContextProvider = ({ children }) => {
         {
           method: options.method,
           headers: options.headers,
+          body: options.body,
         }
       );
 
       if (!response.ok) {
-        throw new Error(`Request failed with status: ${response.status}`);
+        const errorData = await response.json();
+        console.error("Error during login:", errorData);
+        throw new Error("Your token is invalid.");
+      } else {
+        setUserToken(token);
+        localStorage.setItem("token", token);
+        navigate("/");
       }
-
-      const responseData = await response.json();
-      setUserToken(token);
-      localStorage.setItem("token", token);
-      navigate("/");
     } catch (error) {
-      console.error(error);
+      throw error;
     }
   };
 

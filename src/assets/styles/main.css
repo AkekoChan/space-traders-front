@@ -1,0 +1,47 @@
+/* Reset CSS */
+@import "./vendors/reset.css";
+
+/* Global CSS */
+@import "./global/fonts.css";
+
+/* Main CSS */
+* {
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+}
+
+*,
+input::placeholder,
+textarea::placeholder,
+select {
+  font-family: "Inter", sans-serif !important;
+  color: var(--white);
+}
+
+:root {
+  --lavender: #997bc6;
+  --cream: #f1ffc4;
+  --black: #171c21;
+  --white: #ffffff;
+  --gray: #999ea0;
+
+  --font-10px-0_625rem: 0.625rem;
+  --font-12px-0_75rem: 0.75rem;
+  --font-14px-0_875rem: 0.875rem;
+  --font-16px-1rem: 1rem;
+  --font-20px-1_25rem: 1.25rem;
+  --font-24px-1_5rem: 1.5rem;
+  --font-32px-2rem: 2rem;
+  --font-48px-3rem: 3rem;
+  --font-64px-4rem: 4rem;
+  --font-96px-6rem: 6rem;
+  --font-128px-8rem: 8rem;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+
+body {
+  background-color: var(--black);
+}
