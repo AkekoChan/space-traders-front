@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const useFetch = (options = {}) => {
+const useFetch = (options) => {
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -23,7 +23,7 @@ const useFetch = (options = {}) => {
       }
 
       const responseData = await response.json();
-      setData(responseData);
+      setData(responseData.data);
       console.log("responseData", responseData);
     } catch (error) {
       setError(error);

@@ -15,7 +15,6 @@ input::placeholder,
 textarea::placeholder,
 select {
   font-family: "Inter", sans-serif !important;
-  color: var(--white);
 }
 
 :root {
@@ -44,4 +43,9 @@ select {
 
 body {
   background-color: var(--black);
+  padding: 2rem 6rem;
+}
+
+.bold {
+  font-weight: var(--font-weight-semibold);
 }

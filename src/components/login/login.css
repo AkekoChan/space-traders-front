@@ -6,6 +6,7 @@
   flex-direction: column;
   justify-content: center;
   gap: 1.5rem;
+  color: var(--white);
 }
 
 .login-hero {
@@ -47,7 +48,8 @@
   border: 1px solid var(--gray);
   border-radius: 0.75rem;
   font-size: var(--font-16px-1rem);
-  background-color: transparent;
+  background-color: var(--black);
+  color: var(--white);
 
   &::placeholder {
     color: var(--gray);

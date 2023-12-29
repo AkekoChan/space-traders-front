@@ -1,12 +1,10 @@
-import { useState, createContext, useContext, useEffect } from "react";
+import { useState, createContext, useContext } from "react";
 import { useNavigate } from "react-router";
-import useFetch from "../hook/useFetch";
 
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(localStorage.getItem("token"));
-  console.log("userToken", userToken);
   const navigate = useNavigate();
 
   const login = async (token) => {

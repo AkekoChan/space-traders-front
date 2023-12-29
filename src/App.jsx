@@ -1,16 +1,20 @@
 import { useAuthContext } from "./context/authContext";
-import { useNavigate } from "react-router";
+import { useNavigate, Outlet } from "react-router";
+
+import Header from "./components/header/Header.jsx";
 
 const App = () => {
-  const { userToken, logout } = useAuthContext();
+  const { userToken } = useAuthContext();
+
   const navigate = useNavigate();
   if (!userToken) {
     navigate("/login");
   }
-  console.log("userToken", userToken);
+
   return (
     <>
-      <button onClick={logout}>Logout</button>
+      <Header />
+      <Outlet />
     </>
   );
 };
