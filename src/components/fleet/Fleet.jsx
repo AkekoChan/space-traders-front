@@ -8,6 +8,8 @@ import { ThreeDots } from "react-loader-spinner";
 
 import "./fleet.css";
 
+import ShipRow from "./shiprow/ShipRow.jsx";
+
 const Fleet = () => {
   const { userToken } = useAuthContext();
 
@@ -20,6 +22,7 @@ const Fleet = () => {
     },
   };
   const { data, isLoading, error, refetch } = useFetch(options);
+
   return (
     <section className="fleet-container">
       <div className="fleet">
@@ -36,30 +39,26 @@ const Fleet = () => {
       ) : error ? (
         <p className="fleet-error">Oops ! something went wrong !</p>
       ) : (
-        <table className="fleet-table">
-          <thead>
-            <tr>
-              <th style={{ width: "30%" }}>Symbol</th>
-              <th style={{ width: "10%" }}>System</th>
-              <th style={{ width: "15%" }}>Waypoint</th>
-              <th style={{ width: "20%" }}></th>
-              <th style={{ width: "10%" }}>Fuel</th>
-              <th style={{ width: "10%" }}>Cargo</th>
-              <th style={{ width: "5%" }}></th>
-            </tr>
-          </thead>
-          <tbody>
-            {data?.map((ship, index) => {
-              return (
-                <tr key={index}>
-                  <td>{ship.symbol}</td>
-                  <td>{ship.nav.systemSymbol}</td>
-                  <td>{ship.nav.waypointSymbol}</td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        <div className="fleet-table-container">
+          <table className="fleet-table">
+            <thead>
+              <tr>
+                <th style={{ width: "15%" }}>Symbol</th>
+                <th style={{ width: "20%" }}>System</th>
+                <th style={{ width: "20%" }}>Waypoint</th>
+                <th style={{ width: "20%" }}></th>
+                <th style={{ width: "10%" }}>Fuel</th>
+                <th style={{ width: "10%" }}>Cargo</th>
+                <th style={{ width: "5%" }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {data?.map((ship, index) => {
+                return <ShipRow ship={ship} key={index} token={userToken} />;
+              })}
+            </tbody>
+          </table>
+        </div>
       )}
     </section>
   );

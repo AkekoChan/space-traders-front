@@ -4,7 +4,7 @@ import { CopyOutlined, CheckOutlined } from "@ant-design/icons";
 
 import "./subheader.css";
 
-const SubHeader = ({ data, token }) => {
+const SubHeader = React.forwardRef(({ data, token }, ref) => {
   const [isCopied, setIsCopied] = useState(false);
   const handleCopy = () => {
     setIsCopied(true);
@@ -16,7 +16,7 @@ const SubHeader = ({ data, token }) => {
   };
 
   return (
-    <div className="header__subheader">
+    <div className="header__subheader" ref={ref}>
       <ul className="header__sublist">
         <li className="header__subitem-name">
           <span className="bold">{data.symbol}</span>
@@ -43,6 +43,6 @@ const SubHeader = ({ data, token }) => {
       </ul>
     </div>
   );
-};
+});
 
 export default SubHeader;

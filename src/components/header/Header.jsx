@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
 import { useAuthContext } from "../../context/authContext";
@@ -28,10 +28,31 @@ const Header = () => {
   const { data } = useFetch(options);
 
   const [isSubHeaderOpen, setIsSubHeaderOpen] = useState(false);
+  const buttonRef = useRef(null);
+  const popupRef = useRef(null);
 
   const handleProfileClick = () => {
     setIsSubHeaderOpen(!isSubHeaderOpen);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target) &&
+        popupRef.current &&
+        !popupRef.current.contains(event.target)
+      ) {
+        setIsSubHeaderOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [buttonRef, popupRef]);
 
   return (
     <header className="header">
@@ -54,6 +75,7 @@ const Header = () => {
             <ul className="header__list">
               <li className="header__item header__item--profile">
                 <button
+                  ref={buttonRef}
                   onClick={handleProfileClick}
                   className="header__profile"
                   aria-label="Your profile"
@@ -61,7 +83,9 @@ const Header = () => {
                 >
                   <UserOutlined style={{ fontSize: "1.5rem", color: "#fff" }} />
                 </button>
-                {isSubHeaderOpen && <SubHeader data={data} token={userToken} />}
+                {isSubHeaderOpen && (
+                  <SubHeader data={data} token={userToken} ref={popupRef} />
+                )}
               </li>
               <li className="header__item">
                 <button

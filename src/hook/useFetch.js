@@ -24,7 +24,6 @@ const useFetch = (options) => {
 
       const responseData = await response.json();
       setData(responseData.data);
-      console.log("responseData", responseData);
     } catch (error) {
       setError(error);
     } finally {
