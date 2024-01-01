@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { EllipsisOutlined } from "@ant-design/icons";
 import { formatFirstLetterToUpperCase, fetchData } from "../../../utils/index";
 
@@ -85,7 +86,9 @@ const ShipRow = ({ ship, token }) => {
     <tr>
       <td style={{ width: "15%" }}>
         <div className="fleet-table__symbol-container">
-          <span className="fleet-table__symbol">{ship.symbol}</span>
+          <Link to={`/fleet/${ship.symbol}`} className="fleet-table__symbol">
+            {ship.symbol}
+          </Link>
           <span className="fleet-table__frame badge-gray">
             {ship.frame.name}
           </span>

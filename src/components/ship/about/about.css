@@ -1,0 +1,88 @@
+.about__wrapper {
+  display: flex;
+  gap: 1rem;
+}
+
+.about__name {
+  font-size: var(--font-32px-2rem);
+  font-weight: var(--font-weight-semibold);
+  color: var(--white);
+}
+
+.about__status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.about__role,
+.about__system,
+.about__waypoint,
+.about__route,
+.about__departure,
+.about__arrival {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.about__arrival {
+  align-items: flex-end;
+}
+
+.about__role p,
+.about__system p,
+.about__waypoint p,
+.about__route p,
+.about__departure p,
+.about__arrival p {
+  color: var(--gray);
+}
+
+.about__departure span,
+.about__arrival span {
+  color: var(--white);
+}
+
+.about__route span {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--white);
+}
+
+.about__time {
+  display: flex;
+  gap: 2rem;
+}
+.ship-about .about__wrapper:nth-child(2) {
+  flex: 1 33%;
+}
+.ship-about .about__wrapper:last-child {
+  flex-direction: column;
+}
+
+.about__cooldown {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cooldown-bar-container {
+  width: 300px;
+  height: 5px;
+  background: var(--gray);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.cooldown-bar {
+  width: 0;
+  height: 100%;
+  background: var(--cream);
+  transition: width 1s linear;
+}
+
+.cooldown-label {
+  color: var(--gray);
+}

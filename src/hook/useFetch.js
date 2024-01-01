@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 const useFetch = (options) => {
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
   const fetchData = async () => {

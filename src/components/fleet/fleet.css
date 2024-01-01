@@ -106,6 +106,8 @@
 }
 
 .fleet-error {
+  display: flex;
+  gap: 0.625rem;
   font-size: var(--font-48px-3rem);
   color: var(--white);
 }

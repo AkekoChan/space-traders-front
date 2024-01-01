@@ -11,6 +11,8 @@ import {
   UserOutlined,
   HeatMapOutlined,
 } from "@ant-design/icons";
+
+import logo from "../../assets/img/logo.svg";
 import "./header.css";
 
 const Header = () => {
@@ -60,11 +62,7 @@ const Header = () => {
         <ul className="header__list">
           <li className="header__item">
             <Link to="/" className="header__logo">
-              <img
-                src="src/assets/img/logo.svg"
-                alt="Logo Aurora"
-                aria-label="Back to homepage"
-              />
+              <img src={logo} alt="Logo Aurora" aria-label="Back to homepage" />
             </Link>
           </li>
           <li className="header__item header__item--credits">

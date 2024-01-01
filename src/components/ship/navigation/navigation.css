@@ -1,0 +1,64 @@
+.ship-navigation__title {
+  font-size: var(--font-24px-1_5rem);
+  font-family: "Questrial", sans-serif;
+  color: var(--white);
+}
+
+.ship-navigation__btn-primary {
+  text-align: center;
+  padding: 1rem 2rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  background: linear-gradient(94deg, var(--cream) -1.06%, var(--lavender) 100%);
+  border: none;
+  color: var(--black);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-16px-1rem);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.ship-navigation__btn-secondary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+  border: 2px solid var(--gray);
+  background: rgba(255, 255, 255, 0.17);
+  box-shadow: 0px 4px 30px 0px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(2px);
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  color: var(--white);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ship-navigation__btn-primary::before,
+.ship-navigation__btn-secondary::before {
+  content: "";
+  position: absolute;
+  width: 50%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.2);
+  top: 0;
+  left: -50%;
+  opacity: 0;
+  filter: blur(5px);
+  transition: all 0.8s ease-in-out;
+}
+
+.ship-navigation__btn-primary:hover::before,
+.ship-navigation__btn-secondary:hover::before {
+  left: 150%;
+  opacity: 1;
+}
+
+.ship-navigation__list {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}

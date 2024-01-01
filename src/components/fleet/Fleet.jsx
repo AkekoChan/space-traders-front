@@ -1,9 +1,10 @@
 import React from "react";
+import { useNavigate } from "react-router";
 import useFetch from "../../hook/useFetch";
 
 import { useAuthContext } from "../../context/authContext";
 
-import { RedoOutlined } from "@ant-design/icons";
+import { RedoOutlined, WarningOutlined } from "@ant-design/icons";
 import { ThreeDots } from "react-loader-spinner";
 
 import "./fleet.css";
@@ -12,6 +13,11 @@ import ShipRow from "./shiprow/ShipRow.jsx";
 
 const Fleet = () => {
   const { userToken } = useAuthContext();
+  const navigate = useNavigate();
+
+  if (!userToken) {
+    navigate("/login");
+  }
 
   const options = {
     endpoint: "my/ships?page=1&limit=10",
@@ -37,7 +43,10 @@ const Fleet = () => {
       {isLoading ? (
         <ThreeDots color="#F1FFC4" />
       ) : error ? (
-        <p className="fleet-error">Oops ! something went wrong !</p>
+        <p className="fleet-error">
+          <WarningOutlined style={{ fontSize: "3rem" }} />
+          Oops ! something went wrong !
+        </p>
       ) : (
         <div className="fleet-table-container">
           <table className="fleet-table">
