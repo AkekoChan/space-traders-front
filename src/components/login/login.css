@@ -1,12 +1,13 @@
 .login-container {
   max-width: 320px;
   margin: auto;
-  height: 100dvh;
+  height: calc(100vh - 4rem);
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 1.5rem;
   color: var(--white);
+  overflow-y: hidden;
 }
 
 .login-hero {

@@ -16,6 +16,7 @@
   flex-direction: column;
   gap: 0.5rem;
 }
+
 .ship-state__item p {
   color: var(--gray);
 }

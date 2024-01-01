@@ -11,12 +11,6 @@ import "../ship.css";
 import greaterThan from "../../../assets/icons/greater-than.svg";
 
 const About = ({ data }) => {
-  console.log(data.length);
-  console.log(data);
-
-  // console.log(data.registration.name);
-
-  // return data ? <p>Loaded</p> : <p>Loading</p>;
   return (
     <div className="ship-about">
       <div className="about__wrapper">
