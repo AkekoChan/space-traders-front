@@ -17,6 +17,9 @@ select {
   font-family: "Inter", sans-serif !important;
 }
 
+input textarea button select {
+  outline: var(--white) auto 2px;
+}
 :root {
   --lavender: #997bc6;
   --cream: #f1ffc4;

@@ -1,0 +1,17 @@
+.ship-storage table {
+  color: var(--white);
+}
+
+.ship-storage tbody td:not(:first-child),
+.ship-storage th:not(:first-child) {
+  text-align: right;
+}
+
+.ship-storage tbody span {
+  margin-bottom: 0.5rem;
+  display: block;
+}
+
+.ship-storage tbody p {
+  color: var(--gray);
+}

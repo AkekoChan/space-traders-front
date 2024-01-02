@@ -41,7 +41,6 @@ const ShipRow = ({ ship, token }) => {
   useEffect(() => {
     setIsOrbited(ship.nav.status === "IN_ORBIT");
     setIsStateChanged(ship.nav.status);
-    console.log();
   }, [ship.nav.status]);
 
   const handleOrbitClick = async () => {

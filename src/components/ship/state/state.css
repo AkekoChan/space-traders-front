@@ -6,9 +6,8 @@
 
 .ship-state__list {
   display: flex;
-  flex-direction: column;
   align-items: start;
-  gap: 1rem;
+  gap: 2rem;
 }
 
 .ship-state__item {
@@ -61,4 +60,13 @@
 .ship-state__item-button:hover::before {
   left: 150%;
   opacity: 1;
+}
+
+.ship-state__item-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.ship-state__item-button:disabled::before {
+  display: none;
 }

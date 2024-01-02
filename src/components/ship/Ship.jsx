@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
 
 import useFetch from "../../hook/useFetch";
 import { useNavigate } from "react-router";
 import { useAuthContext } from "../../context/authContext";
+import { ShipContextProvider } from "../../context/shipContext";
 
 import { RedoOutlined, WarningOutlined } from "@ant-design/icons";
 import { ThreeDots } from "react-loader-spinner";
@@ -11,18 +12,27 @@ import { ThreeDots } from "react-loader-spinner";
 import About from "./about/About.jsx";
 import Navigation from "./navigation/Navigation.jsx";
 import State from "./state/State.jsx";
+import Extract from "./extract/Extract.jsx";
+import Storage from "./storage/Storage.jsx";
 
 import "./ship.css";
 
 const Ship = () => {
   const { userToken } = useAuthContext();
   const { shipSymbol } = useParams();
+  const [activeButton, setActiveButton] = useState("cargo");
 
   const navigate = useNavigate();
 
-  if (!userToken) {
-    navigate("/login");
-  }
+  useEffect(() => {
+    if (!userToken) {
+      navigate("/login");
+    }
+  }, [userToken, navigate]);
+
+  const handleClickButton = (buttonName) => {
+    setActiveButton(buttonName);
+  };
 
   const options = {
     endpoint: `my/ships/${shipSymbol}`,
@@ -50,17 +60,45 @@ const Ship = () => {
         <ThreeDots color="#F1FFC4" />
       ) : error ? (
         <p className="ship-error">
-          <WarningOutlined style={{ fontSize: "3rem" }} /> Oops ! something went
-          wrong !
+          <WarningOutlined style={{ fontSize: "3rem" }} /> Oops! Something went
+          wrong!
         </p>
       ) : (
-        <div className="ship-wrapper">
-          <About data={data} />
-          <Navigation data={data} />
-          <State data={data} />
-        </div>
+        <ShipContextProvider>
+          <div className="ship-wrapper">
+            <About data={data} />
+            <Navigation data={data} />
+            <State data={data} />
+            <div className="ship-ressources">
+              <div className="ship-ressources__buttons">
+                <button
+                  className={`ship-ressources__button ${
+                    activeButton === "cargo" ? "active" : ""
+                  }`}
+                  onClick={() => handleClickButton("cargo")}
+                >
+                  Cargo
+                </button>
+                <button
+                  className={`ship-ressources__button ${
+                    activeButton === "resources" ? "active" : ""
+                  }`}
+                  onClick={() => handleClickButton("resources")}
+                >
+                  Extract
+                </button>
+              </div>
+              {activeButton === "cargo" ? (
+                <Storage data={data} />
+              ) : (
+                <Extract data={data} />
+              )}
+            </div>
+          </div>
+        </ShipContextProvider>
       )}
     </section>
+    //{" "}
   );
 };
 

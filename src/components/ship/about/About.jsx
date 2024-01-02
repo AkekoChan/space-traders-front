@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+
+import { useShipContext } from "../../../context/shipContext";
 
 import {
   formatFirstLetterToUpperCase,
@@ -11,17 +13,34 @@ import "../ship.css";
 import greaterThan from "../../../assets/icons/greater-than.svg";
 
 const About = ({ data }) => {
+  const { shipData } = useShipContext();
+  const [status, setStatus] = useState(
+    shipData && shipData.nav ? shipData.nav.status : data.nav.status
+  );
+  const [flightMode, setFlightMode] = useState(
+    shipData && shipData.flightMode ? shipData.flightMode : data.nav.flightMode
+  );
+
+  useEffect(() => {
+    if (shipData && shipData.nav) {
+      setStatus(shipData.nav.status);
+    }
+    if (shipData && shipData.flightMode) {
+      setFlightMode(shipData.flightMode);
+    }
+  }, [shipData]);
+
   return (
     <div className="ship-about">
       <div className="about__wrapper">
         <p className="about__name">{data.registration.name}</p>
         <div className="about__status">
           <span className="about__flight-mode badge-gray">
-            {formatFirstLetterToUpperCase(data.nav.flightMode)}
+            {formatFirstLetterToUpperCase(flightMode)}
           </span>
-          {data.nav.status === "IN_ORBIT" ? (
+          {status === "IN_ORBIT" ? (
             <span className="about__in-orbit badge-gray">In orbit</span>
-          ) : data.nav.status === "DOCKED" ? (
+          ) : status === "DOCKED" ? (
             <span className="about__docked badge-gray">Docked</span>
           ) : (
             <span className="about__in-transit badge-gray">In transit</span>
@@ -40,7 +59,7 @@ const About = ({ data }) => {
           <span className="badge-gradient">{data.nav.systemSymbol}</span>
         </div>
         <div className="about__waypoint">
-          <p>System</p>
+          <p>Waypoint</p>
           <span className="badge-gradient">{data.nav.waypointSymbol}</span>
         </div>
       </div>
@@ -67,7 +86,7 @@ const About = ({ data }) => {
           <div className="cooldown-bar-container">
             <div className="time-bar"></div>
           </div>
-          <span className="cooldown-label">350s</span>
+          <span className="cooldown-label">0s</span>
         </div>
       </div>
     </div>

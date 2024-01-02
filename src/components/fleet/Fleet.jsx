@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router";
 import useFetch from "../../hook/useFetch";
 
@@ -15,9 +15,11 @@ const Fleet = () => {
   const { userToken } = useAuthContext();
   const navigate = useNavigate();
 
-  if (!userToken) {
-    navigate("/login");
-  }
+  useEffect(() => {
+    if (!userToken) {
+      navigate("/login");
+    }
+  }, [userToken, navigate]);
 
   const options = {
     endpoint: "my/ships?page=1&limit=10",

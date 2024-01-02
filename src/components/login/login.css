@@ -1,5 +1,5 @@
 .login-container {
-  max-width: 320px;
+  max-width: 530px;
   margin: auto;
   height: calc(100vh - 4rem);
   display: flex;
@@ -17,13 +17,14 @@
 }
 
 .login-hero__logo {
-  width: 65%;
+  width: 200px;
 }
 
 .login-hero__title {
   margin-block: 0.25rem 0.5rem;
   font-size: var(--font-32px-2rem);
   font-family: "Questrial", sans-serif !important;
+  text-align: center;
 }
 
 .login-form__title {
