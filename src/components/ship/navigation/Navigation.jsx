@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useShipContext } from "../../../context/shipContext";
 
+import Navigate from "../../navigate/Navigate.jsx";
+
 import "./navigation.css";
 import "../ship.css";
 
@@ -13,6 +15,16 @@ import eyeSlash from "../../../assets/icons/eye-slash.svg";
 const Navigation = ({ data }) => {
   const { orbitShip, dockShip, updateNavigationMode } = useShipContext();
   const [isOrbited, setIsOrbited] = useState(data.nav.status === "IN_ORBIT");
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [reference, setReference] = useState(null);
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
 
   const handleClickOrbit = async () => {
     try {
@@ -87,9 +99,13 @@ const Navigation = ({ data }) => {
           </button>
         </li>
       </ul>
-      <Link to="" className="ship-navigation__btn-primary">
+      <button
+        className="ship-navigation__btn-primary"
+        onClick={handleOpenModal}
+      >
         Navigate
-      </Link>
+      </button>
+      <Navigate isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   );
 };

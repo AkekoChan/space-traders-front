@@ -1,3 +1,6 @@
+.ship-storage {
+  width: 100%;
+}
 .ship-storage table {
   color: var(--white);
 }
