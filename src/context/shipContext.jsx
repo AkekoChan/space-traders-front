@@ -88,12 +88,62 @@ export const ShipContextProvider = ({ children }) => {
     }
   };
 
+  const fetchSystemWaypoints = async (systemSymbol) => {
+    const waypoints = [];
+    const limit = 10;
+
+    const fetchWaypointsForPage = async (page) => {
+      const optionsAllWaypoints = {
+        endpoint: `systems/${systemSymbol}/waypoints?page=${page}&limit=${limit}`,
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+      };
+
+      const dataAllWaypoints = await fetchData(optionsAllWaypoints);
+      waypoints.push(...dataAllWaypoints);
+    };
+
+    const optionsCountWaypoints = {
+      endpoint: `systems/${systemSymbol}`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+    };
+
+    const data = await fetchData(optionsCountWaypoints);
+    const countWaypoints = data.waypoints.length;
+
+    const totalPages = Math.ceil(countWaypoints / limit);
+    const delayBetweenRequests = 3000;
+
+    const fetchPromises = [];
+
+    for (let page = 1; page <= totalPages; page++) {
+      fetchPromises.push(
+        new Promise((resolve) => {
+          setTimeout(async () => {
+            await fetchWaypointsForPage(page);
+            resolve();
+          }, delayBetweenRequests);
+        })
+      );
+    }
+
+    await Promise.all(fetchPromises);
+
+    localStorage.setItem("waypoints", JSON.stringify(waypoints));
+  };
+
   const contextValue = {
     dockShip,
     orbitShip,
     updateNavigationMode,
     shipData,
     refuelShip,
+    fetchSystemWaypoints,
   };
 
   return (

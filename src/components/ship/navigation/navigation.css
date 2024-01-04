@@ -15,7 +15,6 @@
   color: var(--black);
   font-weight: var(--font-weight-semibold);
   font-size: var(--font-16px-1rem);
-  line-height: 1.4;
   cursor: pointer;
   position: relative;
   overflow: hidden;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { useShipContext } from "../../../context/shipContext";
 
 import Navigate from "../../navigate/Navigate.jsx";
@@ -13,10 +12,10 @@ import burn from "../../../assets/icons/burn.svg";
 import eyeSlash from "../../../assets/icons/eye-slash.svg";
 
 const Navigation = ({ data }) => {
-  const { orbitShip, dockShip, updateNavigationMode } = useShipContext();
+  const { orbitShip, dockShip, updateNavigationMode, shipData } =
+    useShipContext();
   const [isOrbited, setIsOrbited] = useState(data.nav.status === "IN_ORBIT");
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [reference, setReference] = useState(null);
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -29,10 +28,10 @@ const Navigation = ({ data }) => {
   const handleClickOrbit = async () => {
     try {
       if (isOrbited) {
-        const result = await dockShip(data.symbol);
+        await dockShip(data.symbol);
         setIsOrbited(false);
       } else {
-        const result = await orbitShip(data.symbol);
+        await orbitShip(data.symbol);
         setIsOrbited(true);
       }
     } catch (error) {
@@ -50,7 +49,10 @@ const Navigation = ({ data }) => {
 
   useEffect(() => {
     setIsOrbited(data.nav.status === "IN_ORBIT");
-  }, [data.nav.status]);
+    if (shipData && shipData.nav) {
+      setIsOrbited(shipData.nav.status === "IN_ORBIT");
+    }
+  }, [data.nav.status, shipData]);
 
   return (
     <div className="ship-navigation">
@@ -105,7 +107,7 @@ const Navigation = ({ data }) => {
       >
         Navigate
       </button>
-      <Navigate isOpen={isModalOpen} onClose={handleCloseModal} />
+      <Navigate isOpen={isModalOpen} onClose={handleCloseModal} ship={data} />
     </div>
   );
 };

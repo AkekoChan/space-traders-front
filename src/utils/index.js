@@ -18,6 +18,22 @@ export function formatDateToEuropean(dateStr) {
   return formattedDate;
 }
 
+export function replaceUnderscoreWithSpace(text) {
+  const newText = text.replace(/_/g, " ");
+
+  return newText;
+}
+
+export function distance(x1, y1, x2, y2) {
+  return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
+}
+
+export function travelTime(dist, multiplier, engineSpeed) {
+  return Math.round(
+    Math.round(Math.max(1, dist)) * (multiplier / engineSpeed) + 15
+  );
+}
+
 export function fetchData(options) {
   return new Promise(async (resolve, reject) => {
     try {
@@ -38,7 +54,6 @@ export function fetchData(options) {
       }
 
       const responseData = await response.json();
-      console.log("Response:", responseData);
       resolve(responseData.data);
     } catch (error) {
       console.error("Fetch Error:", error);

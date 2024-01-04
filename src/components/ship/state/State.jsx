@@ -52,7 +52,9 @@ const State = ({ data }) => {
           <button
             className="ship-state__item-button"
             onClick={handleClickRefuel}
-            disabled={isFull || isDocked === "IN_ORBIT"}
+            disabled={
+              isFull || isDocked === "IN_ORBIT" || isDocked === "IN_TRANSIT"
+            }
           >
             Refuel
           </button>
