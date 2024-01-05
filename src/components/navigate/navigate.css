@@ -278,11 +278,20 @@
   justify-content: end;
 }
 
-.navigate-sate__item-button:disabled {
+.navigate-sate__item-button:disabled,
+.navigate-table__button:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.navigate-sate__item-button:disabled::before {
+.navigate-sate__item-button:disabled::before,
+.navigate-table__button:disabled::before {
   display: none;
+}
+
+.navigate-table__sort-button {
+  cursor: pointer;
+  margin-left: 0.5rem;
+  background: none;
+  border: none;
 }

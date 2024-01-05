@@ -14,7 +14,16 @@ import eyeSlash from "../../../assets/icons/eye-slash.svg";
 const Navigation = ({ data }) => {
   const { orbitShip, dockShip, updateNavigationMode, shipData } =
     useShipContext();
-  const [isOrbited, setIsOrbited] = useState(data.nav.status === "IN_ORBIT");
+  const [isOrbited, setIsOrbited] = useState(
+    shipData && shipData.nav
+      ? shipData.nav.status === "IN_ORBIT"
+      : data.nav.status === "IN_ORBIT"
+  );
+  const [isTransited, setIsTransited] = useState(
+    shipData && shipData.nav
+      ? shipData.nav.status === "IN_TRANSIT"
+      : data.nav.status === "IN_TRANSIT"
+  );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const handleOpenModal = () => {
@@ -48,26 +57,30 @@ const Navigation = ({ data }) => {
   };
 
   useEffect(() => {
-    setIsOrbited(data.nav.status === "IN_ORBIT");
     if (shipData && shipData.nav) {
       setIsOrbited(shipData.nav.status === "IN_ORBIT");
     }
-  }, [data.nav.status, shipData]);
+    if (shipData && shipData.nav) {
+      setIsTransited(shipData.nav.status === "IN_TRANSIT");
+    }
+  }, [shipData]);
 
   return (
     <div className="ship-navigation">
       <h3 className="ship-navigation__title">Navigation</h3>
       <button
-        className="ship-navigation__btn-primary"
+        className="ship-navigation__btn-primary btn-disabled"
         onClick={handleClickOrbit}
+        disabled={isTransited}
       >
         {isOrbited ? "Dock" : "Orbit"}
       </button>
       <ul className="ship-navigation__list">
         <li>
           <button
-            className="ship-navigation__btn-secondary"
+            className="ship-navigation__btn-secondary btn-disabled"
             onClick={() => handleClickMode("CRUISE")}
+            disabled={isTransited}
           >
             <img src={fastForwad} alt="fast forward icon" />
             Cruise
@@ -75,8 +88,9 @@ const Navigation = ({ data }) => {
         </li>
         <li>
           <button
-            className="ship-navigation__btn-secondary"
+            className="ship-navigation__btn-secondary btn-disabled"
             onClick={() => handleClickMode("DRIFT")}
+            disabled={isTransited}
           >
             <img src={fastBackward} alt="fast backward icon" />
             Drift
@@ -84,8 +98,9 @@ const Navigation = ({ data }) => {
         </li>
         <li>
           <button
-            className="ship-navigation__btn-secondary"
+            className="ship-navigation__btn-secondary btn-disabled"
             onClick={() => handleClickMode("BURN")}
+            disabled={isTransited}
           >
             <img src={burn} alt="burn icon" />
             Burn
@@ -93,8 +108,9 @@ const Navigation = ({ data }) => {
         </li>
         <li>
           <button
-            className="ship-navigation__btn-secondary"
+            className="ship-navigation__btn-secondary btn-disabled"
             onClick={() => handleClickMode("STEALTH")}
+            disabled={isTransited}
           >
             <img src={eyeSlash} alt="eye slash icon" />
             Stealth
@@ -102,8 +118,9 @@ const Navigation = ({ data }) => {
         </li>
       </ul>
       <button
-        className="ship-navigation__btn-primary"
+        className="ship-navigation__btn-primary btn-disabled"
         onClick={handleOpenModal}
+        disabled={!isOrbited}
       >
         Navigate
       </button>

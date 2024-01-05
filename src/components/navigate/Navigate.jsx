@@ -9,12 +9,16 @@ import {
   FloatingOverlay,
 } from "@floating-ui/react";
 
-import { formatFirstLetterToUpperCase } from "../../utils";
+import { formatFirstLetterToUpperCase, distance } from "../../utils";
 import { useShipContext } from "../../context/shipContext";
 
 import "./navigate.css";
 
-import { CloseOutlined } from "@ant-design/icons";
+import {
+  CloseOutlined,
+  SortAscendingOutlined,
+  SortDescendingOutlined,
+} from "@ant-design/icons";
 
 import fuel from "../../assets/icons/fuel.svg";
 import cargo from "../../assets/icons/cargo.svg";
@@ -42,12 +46,44 @@ const Dialog = ({ isOpen, onClose, ship }) => {
   const [flightMode, setFlightMode] = useState(
     shipData && shipData.flightMode ? shipData.flightMode : ship.nav.flightMode
   );
+  const [changeWaypoint, setChangeWaypoint] = useState(
+    shipData && shipData.nav
+      ? shipData.nav.waypointSymbol
+      : ship.nav.waypointSymbol
+  );
   const [isOrbited, setIsOrbited] = useState(ship.nav.status === "IN_ORBIT");
   const [isFull, setIsFull] = useState(false);
   const [fuelCapacity, setFuelCapacity] = useState(ship.fuel.current);
+  const [sortOrder, setSortOrder] = useState("asc");
   const [waypoints, setWaypoints] = useState(
     JSON.parse(localStorage.getItem("waypoints"))
   );
+
+  const sortWaypoints = (waypoints, order) => {
+    return waypoints.slice().sort((a, b) => {
+      const distanceA = distance(
+        a.x,
+        a.y,
+        coordinatesShip.x,
+        coordinatesShip.y
+      );
+      const distanceB = distance(
+        b.x,
+        b.y,
+        coordinatesShip.x,
+        coordinatesShip.y
+      );
+
+      return order === "asc" ? distanceA - distanceB : distanceB - distanceA;
+    });
+  };
+
+  const sortedWaypoints = sortWaypoints(waypoints, sortOrder);
+
+  const handleSortByDistance = () => {
+    const newOrder = sortOrder === "asc" ? "desc" : "asc";
+    setSortOrder(newOrder);
+  };
 
   const handleClickOrbit = async () => {
     try {
@@ -103,17 +139,35 @@ const Dialog = ({ isOpen, onClose, ship }) => {
     if (shipData && shipData.nav) {
       setStatus(shipData.nav.status);
     }
+
     if (shipData && shipData.flightMode) {
       setFlightMode(shipData.flightMode);
     }
+
     if (shipData && shipData.nav) {
       setIsOrbited(shipData.nav.status === "IN_ORBIT");
     }
-    if (ship.fuel.current === ship.fuel.capacity) {
+
+    if (fuelCapacity === ship.fuel.capacity) {
       setIsFull(true);
     }
 
-    // console.log("waypoints", JSON.parse(localStorage.get("waypoints")));
+    if (
+      shipData &&
+      shipData.fuel &&
+      shipData.fuel.current === ship.fuel.capacity
+    ) {
+      setFuelCapacity(true);
+    }
+
+    if (shipData && shipData.fuel) {
+      setFuelCapacity(shipData.fuel.current);
+    }
+
+    if (shipData && shipData.nav) {
+      setChangeWaypoint(shipData.nav.waypointSymbol);
+    }
+
     if (!waypoints) {
       const fetchWaypoints = async () => {
         await fetchSystemWaypoints(ship.nav.systemSymbol);
@@ -166,7 +220,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                   <div className="navigate-info">
                     <p>Waypoint</p>
                     <span className="navigate-waypoint badge-gradient">
-                      {ship.nav.waypointSymbol}
+                      {changeWaypoint}
                     </span>
                   </div>
                   <div className="navigate-status">
@@ -198,8 +252,8 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                           onClick={handleClickRefuel}
                           disabled={
                             isFull ||
-                            isDocked === "IN_ORBIT" ||
-                            isDocked === "IN_TRANSIT"
+                            status === "IN_ORBIT" ||
+                            status === "IN_TRANSIT"
                           }
                         >
                           Refuel
@@ -280,20 +334,40 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                   <thead>
                     <tr>
                       <th style={{ width: "25%" }}>Waypoint</th>
-                      <th style={{ width: "20%" }}>Distance (Time)</th>
+                      <th style={{ width: "20%" }}>
+                        Distance (Time)
+                        <button
+                          onClick={handleSortByDistance}
+                          className="navigate-table__sort-button"
+                        >
+                          {sortOrder === "asc" ? (
+                            <SortAscendingOutlined
+                              style={{ color: "#fff", fontSize: "1.5rem" }}
+                            />
+                          ) : (
+                            <SortDescendingOutlined
+                              style={{ color: "#fff", fontSize: "1.5rem" }}
+                            />
+                          )}
+                        </button>
+                      </th>
                       <th style={{ width: "15%" }}>Type</th>
                       <th style={{ width: "30%" }}>Traits</th>
                       <th style={{ width: "10%" }}></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {waypoints.map((waypoint) => (
+                    {sortedWaypoints.map((waypoint) => (
                       <NavigateRow
                         key={waypoint.symbol}
                         waypoint={waypoint}
                         coordinatesShip={coordinatesShip}
                         speedShip={ship.engine.speed}
+                        symbolShip={ship.symbol}
+                        waypointShip={ship.nav.waypointSymbol}
                         flightMode={flightMode}
+                        isOrbited={!isOrbited}
+                        fuel={fuelCapacity}
                       />
                     ))}
                   </tbody>

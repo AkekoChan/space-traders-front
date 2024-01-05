@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import { useShipContext } from "../../../context/shipContext";
 
+import Cooldown from "../../cooldown/Cooldown.jsx";
+
 import {
   formatFirstLetterToUpperCase,
   formatDateToEuropean,
@@ -13,13 +15,37 @@ import "../ship.css";
 import greaterThan from "../../../assets/icons/greater-than.svg";
 
 const About = ({ data }) => {
-  const { shipData } = useShipContext();
+  const { shipData, orbitShip } = useShipContext();
   const [status, setStatus] = useState(
     shipData && shipData.nav ? shipData.nav.status : data.nav.status
   );
   const [flightMode, setFlightMode] = useState(
     shipData && shipData.flightMode ? shipData.flightMode : data.nav.flightMode
   );
+  const [arrivalDate, setArrivalDate] = useState({
+    time:
+      shipData && shipData.nav
+        ? shipData.nav.route.arrival
+        : data.nav.route.arrival,
+    waypoint:
+      shipData && shipData.nav
+        ? shipData.nav.route.destination.symbol
+        : data.nav.route.destination.symbol,
+  });
+  const [departureDate, setDepartureDate] = useState({
+    time:
+      shipData && shipData.nav
+        ? shipData.nav.route.departureTime
+        : data.nav.route.departureTime,
+    waypoint:
+      shipData && shipData.nav
+        ? shipData.nav.route.departure.symbol
+        : data.nav.route.departure.symbol,
+  });
+
+  const handleCooldownEnd = () => {
+    orbitShip(data.symbol);
+  };
 
   useEffect(() => {
     if (shipData && shipData.nav) {
@@ -27,6 +53,16 @@ const About = ({ data }) => {
     }
     if (shipData && shipData.flightMode) {
       setFlightMode(shipData.flightMode);
+    }
+    if (shipData && shipData.nav) {
+      setArrivalDate({
+        time: shipData.nav.route.arrival,
+        waypoint: shipData.nav.route.destination.symbol,
+      });
+      setDepartureDate({
+        time: shipData.nav.route.departureTime,
+        waypoint: shipData.nav.route.departure.symbol,
+      });
     }
   }, [shipData]);
 
@@ -60,34 +96,35 @@ const About = ({ data }) => {
         </div>
         <div className="about__waypoint">
           <p>Waypoint</p>
-          <span className="badge-gradient">{data.nav.waypointSymbol}</span>
+          <span className="badge-gradient">{arrivalDate.waypoint}</span>
         </div>
       </div>
       <div className="about__wrapper">
         <div className="about__route">
           <p>Route</p>
           <span>
-            {data?.nav.route.departure.symbol}
+            {departureDate.waypoint}
             <img src={greaterThan} alt="Greater than icon" />
-            {data?.nav.route.destination.symbol}
+            {arrivalDate.waypoint}
           </span>
         </div>
         <div className="about__time">
           <div className="about__departure">
             <p>Departed</p>
-            <span>{formatDateToEuropean(data.nav.route.departureTime)}</span>
+            <span>{formatDateToEuropean(departureDate.time)}</span>
           </div>
           <div className="about__arrival">
             <p>Arrived</p>
-            <span>{formatDateToEuropean(data.nav.route.arrival)}</span>
+            <span>{formatDateToEuropean(arrivalDate.time)}</span>
           </div>
         </div>
-        <div className="about__cooldown">
-          <div className="cooldown-bar-container">
-            <div className="time-bar"></div>
-          </div>
-          <span className="cooldown-label">0s</span>
-        </div>
+
+        <Cooldown
+          startTime={departureDate.time}
+          endTime={arrivalDate.time}
+          shipSymbol={data.symbol}
+          onCooldownEnd={handleCooldownEnd}
+        />
       </div>
     </div>
   );

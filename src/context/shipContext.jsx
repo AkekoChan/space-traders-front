@@ -8,6 +8,7 @@ const ShipContext = createContext();
 export const ShipContextProvider = ({ children }) => {
   const { userToken } = useAuthContext();
   const [shipData, setShipData] = useState({});
+  const [isFinished, setIsFinished] = useState(false);
 
   const dockShip = async (shipSymbol) => {
     const options = {
@@ -82,6 +83,7 @@ export const ShipContextProvider = ({ children }) => {
 
     try {
       const result = await fetchData(options);
+      setShipData(result);
       return result;
     } catch (error) {
       console.error("Error refueling ship:", error);
@@ -137,6 +139,27 @@ export const ShipContextProvider = ({ children }) => {
     localStorage.setItem("waypoints", JSON.stringify(waypoints));
   };
 
+  const shipNavigate = async (waypoint, shipSymbol) => {
+    const options = {
+      endpoint: `my/ships/${shipSymbol}/navigate`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: `{"waypointSymbol": "${waypoint}"}`,
+    };
+    try {
+      const result = await fetchData(options);
+      setShipData(result);
+      console.log("Ship navigation result:", result);
+      return result;
+    } catch (error) {
+      console.error("Error navigating ship:", error);
+    }
+  };
+
   const contextValue = {
     dockShip,
     orbitShip,
@@ -144,6 +167,7 @@ export const ShipContextProvider = ({ children }) => {
     shipData,
     refuelShip,
     fetchSystemWaypoints,
+    shipNavigate,
   };
 
   return (

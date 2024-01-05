@@ -58,6 +58,15 @@
   opacity: 1;
 }
 
+.btn-disabled:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-disabled:disabled::before {
+  display: none;
+}
+
 .ship-navigation__list {
   display: flex;
   justify-content: center;

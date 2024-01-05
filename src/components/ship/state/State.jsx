@@ -23,6 +23,10 @@ const State = ({ data }) => {
     if (data.fuel.current === data.fuel.capacity) {
       setIsFull(true);
     }
+    if (shipData && shipData.fuel) {
+      setFuelCapacity(shipData.fuel.current);
+    }
+    console.log(isDocked);
   });
 
   const handleClickRefuel = async () => {

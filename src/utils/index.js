@@ -18,6 +18,19 @@ export function formatDateToEuropean(dateStr) {
   return formattedDate;
 }
 
+export function getFormattedTimeFromTimestamp(timestamp) {
+  const date = new Date(timestamp);
+  const options = {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false, // Utilise le format 24 heures
+  };
+
+  const formattedTime = new Intl.DateTimeFormat("en-US", options).format(date);
+  return formattedTime;
+}
+
 export function replaceUnderscoreWithSpace(text) {
   const newText = text.replace(/_/g, " ");
 
