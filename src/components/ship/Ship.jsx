@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router";
 
 import useFetch from "../../hook/useFetch";
@@ -45,26 +45,31 @@ const Ship = () => {
 
   const { data, isLoading, error, refetch } = useFetch(options);
 
+  const memoizedExtractComponent = useMemo(
+    () => <Extract shipSymbol={data.symbol} userToken={userToken} />,
+    [data.symbol]
+  );
+
   return (
-    <section className="ship-container">
-      <div className="ship">
-        <h1 className="ship-title">Ship</h1>
-        <div className="ship-refresh">
-          Refresh
-          <button className="ship-refresh__button" onClick={refetch}>
-            <RedoOutlined style={{ fontSize: "1.5rem", color: "#fff" }} />
-          </button>
+    <ShipContextProvider>
+      <section className="ship-container">
+        <div className="ship">
+          <h1 className="ship-title">Ship</h1>
+          <div className="ship-refresh">
+            Refresh
+            <button className="ship-refresh__button" onClick={refetch}>
+              <RedoOutlined style={{ fontSize: "1.5rem", color: "#fff" }} />
+            </button>
+          </div>
         </div>
-      </div>
-      {isLoading ? (
-        <ThreeDots color="#F1FFC4" />
-      ) : error ? (
-        <p className="ship-error">
-          <WarningOutlined style={{ fontSize: "3rem" }} /> Oops! Something went
-          wrong!
-        </p>
-      ) : (
-        <ShipContextProvider>
+        {isLoading ? (
+          <ThreeDots color="#F1FFC4" />
+        ) : error ? (
+          <p className="ship-error">
+            <WarningOutlined style={{ fontSize: "3rem" }} /> Oops! Something
+            went wrong!
+          </p>
+        ) : (
           <div className="ship-wrapper">
             <About data={data} />
             <Navigation data={data} />
@@ -91,14 +96,13 @@ const Ship = () => {
               {activeButton === "cargo" ? (
                 <Storage data={data} />
               ) : (
-                <Extract data={data} />
+                memoizedExtractComponent
               )}
             </div>
           </div>
-        </ShipContextProvider>
-      )}
-    </section>
-    //{" "}
+        )}
+      </section>
+    </ShipContextProvider>
   );
 };
 

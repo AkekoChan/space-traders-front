@@ -65,7 +65,7 @@
 .ship-wrapper {
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: max-content 1fr max-content;
   grid-template-rows: max-content 1fr;
   gap: 2rem;
 }
@@ -132,7 +132,7 @@
   background: rgba(255, 255, 255, 0.17);
 }
 
-@media screen and (max-width: 1300px) {
+@media screen and (max-width: 1375px) {
   .ship-wrapper {
     display: grid;
     grid-template-columns: 1fr;

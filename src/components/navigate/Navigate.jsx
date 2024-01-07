@@ -189,6 +189,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
           style={{
             background: "rgba(0, 0, 0, 0.8)",
             padding: "1.5rem",
+
             zIndex: 1000,
           }}
         >

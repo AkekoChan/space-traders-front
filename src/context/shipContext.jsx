@@ -8,7 +8,6 @@ const ShipContext = createContext();
 export const ShipContextProvider = ({ children }) => {
   const { userToken } = useAuthContext();
   const [shipData, setShipData] = useState({});
-  const [isFinished, setIsFinished] = useState(false);
 
   const dockShip = async (shipSymbol) => {
     const options = {
@@ -160,6 +159,41 @@ export const ShipContextProvider = ({ children }) => {
     }
   };
 
+  const extractRessources = async (shipSymbol) => {
+    const options = {
+      endpoint: `my/ships/${shipSymbol}/extract`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+    try {
+      const result = await fetchData(options);
+      setShipData(result);
+      return result;
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  const updateStorage = async (shipSymbol) => {
+    const options = {
+      endpoint: `my/ships/${shipSymbol}/cargo`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+    try {
+      const result = await fetchData(options);
+      setShipData(result);
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const contextValue = {
     dockShip,
     orbitShip,
@@ -168,6 +202,8 @@ export const ShipContextProvider = ({ children }) => {
     refuelShip,
     fetchSystemWaypoints,
     shipNavigate,
+    extractRessources,
+    updateStorage,
   };
 
   return (

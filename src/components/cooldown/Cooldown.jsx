@@ -15,7 +15,6 @@ const Cooldown = ({ startTime, endTime, onCooldownEnd }) => {
 
   useEffect(() => {
     if (new Date(endTime).getTime() <= new Date().getTime()) {
-      // Si le temps de fin est déjà dépassé, ne pas démarrer le timer
       return;
     }
 
@@ -38,9 +37,15 @@ const Cooldown = ({ startTime, endTime, onCooldownEnd }) => {
     return null;
   }
 
-  const totalTime = new Date(endTime).getTime() - new Date(startTime).getTime();
+  let totalTime;
+  if (startTime instanceof Date) {
+    totalTime = new Date(endTime).getTime() - startTime.getTime();
+  } else {
+    totalTime = startTime * 1000;
+  }
+
   const elapsedPercentage = ((totalTime - timeLeft) / totalTime) * 100;
-  console.log(elapsedPercentage);
+  const remainingTimeLabel = totalTime > 0 ? Math.floor(timeLeft / 1000) : 0;
 
   return (
     <div className="cooldown">
@@ -50,7 +55,7 @@ const Cooldown = ({ startTime, endTime, onCooldownEnd }) => {
           style={{ width: `${elapsedPercentage}%` }}
         ></div>
       </div>
-      <span className="cooldown-label">{Math.floor(timeLeft / 1000)}s</span>
+      <span className="cooldown-label">{remainingTimeLabel}s</span>
     </div>
   );
 };

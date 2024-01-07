@@ -3,6 +3,8 @@ import { useNavigate, Outlet } from "react-router";
 
 import Header from "./components/header/Header.jsx";
 
+import { ShipContextProvider } from "./context/shipContext";
+
 const App = () => {
   const { userToken } = useAuthContext();
 

@@ -47,8 +47,11 @@
   opacity: 1;
 }
 
-.extract__cooldown {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.extract__button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.extract__button:disabled::before {
+  display: none;
 }

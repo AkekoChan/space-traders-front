@@ -9,12 +9,16 @@ import cargo from "../../../assets/icons/cargo.svg";
 import wrench from "../../../assets/icons/wrench.svg";
 
 const State = ({ data }) => {
+  console.log(data);
   const { shipData, refuelShip } = useShipContext();
   const [isFull, setIsFull] = useState(false);
   const [isDocked, setIsDocked] = useState(
     shipData && shipData.nav ? shipData.nav.status : data.nav.status
   );
   const [fuelCapacity, setFuelCapacity] = useState(data.fuel.current);
+  const [cargoUnits, setCargoUnits] = useState(
+    shipData && shipData.cargo ? shipData.cargo.units : data.cargo.units
+  );
 
   useEffect(() => {
     if (shipData && shipData.nav) {
@@ -26,8 +30,10 @@ const State = ({ data }) => {
     if (shipData && shipData.fuel) {
       setFuelCapacity(shipData.fuel.current);
     }
-    console.log(isDocked);
-  });
+    if (shipData && shipData.cargo) {
+      setCargoUnits(shipData.cargo.units);
+    }
+  }, [shipData]);
 
   const handleClickRefuel = async () => {
     if (isFull || isDocked === "IN_ORBIT" || isDocked === "IN_TRANSIT") {
@@ -68,7 +74,7 @@ const State = ({ data }) => {
           <div className="ship-state__item-value-container">
             <img src={cargo} alt="Cargo Icon" />
             <span className="ship-state__item-value">
-              {data.cargo.units} / {data.cargo.capacity}
+              {cargoUnits} / {data.cargo.capacity}
             </span>
           </div>
         </li>

@@ -24,7 +24,7 @@ export function getFormattedTimeFromTimestamp(timestamp) {
     hour: "2-digit",
     minute: "2-digit",
     second: "2-digit",
-    hour12: false, // Utilise le format 24 heures
+    hour12: false,
   };
 
   const formattedTime = new Intl.DateTimeFormat("en-US", options).format(date);
@@ -63,6 +63,11 @@ export function fetchData(options) {
         const errorData = await response.json();
         console.error("Error Response:", errorData);
         reject(new Error(`Request failed with status: ${response.status}`));
+        return;
+      }
+
+      if (response.status === 204) {
+        resolve(null);
         return;
       }
 

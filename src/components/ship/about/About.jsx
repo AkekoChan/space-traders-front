@@ -6,6 +6,7 @@ import Cooldown from "../../cooldown/Cooldown.jsx";
 
 import {
   formatFirstLetterToUpperCase,
+  replaceUnderscoreWithSpace,
   formatDateToEuropean,
 } from "../../../utils";
 
@@ -31,6 +32,10 @@ const About = ({ data }) => {
       shipData && shipData.nav
         ? shipData.nav.route.destination.symbol
         : data.nav.route.destination.symbol,
+    type:
+      shipData && shipData.nav
+        ? shipData.nav.route.destination.type
+        : data.nav.route.destination.type,
   });
   const [departureDate, setDepartureDate] = useState({
     time:
@@ -58,6 +63,7 @@ const About = ({ data }) => {
       setArrivalDate({
         time: shipData.nav.route.arrival,
         waypoint: shipData.nav.route.destination.symbol,
+        type: shipData.nav.route.destination.type,
       });
       setDepartureDate({
         time: shipData.nav.route.departureTime,
@@ -98,6 +104,14 @@ const About = ({ data }) => {
           <p>Waypoint</p>
           <span className="badge-gradient">{arrivalDate.waypoint}</span>
         </div>
+        <div className="about__type">
+          <p>Type</p>
+          <span className="badge-gradient">
+            {replaceUnderscoreWithSpace(
+              formatFirstLetterToUpperCase(arrivalDate.type)
+            )}
+          </span>
+        </div>
       </div>
       <div className="about__wrapper">
         <div className="about__route">
@@ -120,7 +134,7 @@ const About = ({ data }) => {
         </div>
 
         <Cooldown
-          startTime={departureDate.time}
+          startTime={new Date(departureDate.time)}
           endTime={arrivalDate.time}
           shipSymbol={data.symbol}
           onCooldownEnd={handleCooldownEnd}

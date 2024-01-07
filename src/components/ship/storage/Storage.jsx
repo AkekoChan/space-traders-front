@@ -1,8 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 import "./storage.css";
 
+import {
+  formatFirstLetterToUpperCase,
+  replaceUnderscoreWithSpace,
+} from "../../../utils";
+
+import { useShipContext } from "../../../context/shipContext";
+
 const Storage = ({ data }) => {
+  const { shipData } = useShipContext();
+  console.log(shipData);
+  const [storage, setstorage] = useState(
+    shipData && shipData.inventory ? shipData.inventory : data.cargo.inventory
+  );
+
+  useEffect(() => {
+    setstorage(
+      shipData && shipData.inventory ? shipData.inventory : data.cargo.inventory
+    );
+  }, [shipData]);
+
   return (
     <div className="ship-storage">
       <table className="fleet-table">
@@ -15,10 +34,14 @@ const Storage = ({ data }) => {
           </tr>
         </thead>
         <tbody>
-          {data?.cargo.inventory.map((item, index) => (
+          {storage.map((item, index) => (
             <tr key={index}>
               <td>
-                <span>{item.name}</span>
+                <span>
+                  {replaceUnderscoreWithSpace(
+                    formatFirstLetterToUpperCase(item.symbol)
+                  )}
+                </span>
                 <p>{item.description}</p>
               </td>
               <td>{item.units}</td>

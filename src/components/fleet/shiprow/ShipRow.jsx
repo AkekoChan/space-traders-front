@@ -59,8 +59,6 @@ const ShipRow = ({ ship, token }) => {
 
       setIsStateChanged(data.nav.status);
       setIsOrbited(true);
-
-      console.log("Orbited");
     } else {
       const options = {
         endpoint: `my/ships/${ship.symbol}/dock`,
@@ -76,8 +74,6 @@ const ShipRow = ({ ship, token }) => {
 
       setIsStateChanged(data.nav.status);
       setIsOrbited(false);
-
-      console.log("Docked");
     }
   };
 
@@ -160,9 +156,6 @@ const ShipRow = ({ ship, token }) => {
             >
               {isOrbited ? "Dock" : "Orbit"}
             </button>
-            {isOrbited ? (
-              <button className="fleet-submenu__button">Navigate</button>
-            ) : null}
           </div>
         )}
       </td>
