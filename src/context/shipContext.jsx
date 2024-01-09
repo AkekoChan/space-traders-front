@@ -175,10 +175,10 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
 
-    return fetchData(options);
+    return updateShipData(options);
   };
 
-  const sellItem = async (item, shipSymbol, units) => {
+  const sellCargo = async (item, shipSymbol, units) => {
     const options = {
       endpoint: `my/ships/${shipSymbol}/sell`,
       method: "POST",
@@ -190,7 +190,7 @@ export const ShipContextProvider = ({ children }) => {
       body: `{"symbol":"${item}","units":"${units}"}`,
     };
 
-    return fetchData(options);
+    return updateShipData(options) && updateStorage(shipSymbol);
   };
 
   const contextValue = {
@@ -204,7 +204,7 @@ export const ShipContextProvider = ({ children }) => {
     extractRessources,
     updateStorage,
     getMarket,
-    sellItem,
+    sellCargo,
   };
 
   return (

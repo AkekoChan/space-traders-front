@@ -43,7 +43,6 @@ const Ship = () => {
 
   const { data, isLoading, error, refetch } = useFetch(options);
 
-  // Utilisation de useMemo pour éviter le re-render inutile de Extract
   const memoizedExtractComponent = useMemo(
     () => <Extract shipSymbol={data.symbol} userToken={userToken} />,
     [data.symbol, userToken]

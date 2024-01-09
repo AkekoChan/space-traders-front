@@ -31,10 +31,14 @@ const Navigation = ({ data }) => {
     try {
       if (isOrbited) {
         await dockShip(data.symbol);
+        console.log("Docked");
         setIsOrbited(false);
+        console.log(isOrbited);
       } else {
+        console.log("Orbiting");
         await orbitShip(data.symbol);
         setIsOrbited(true);
+        console.log(isOrbited);
       }
     } catch (error) {
       console.error("Error in orbit/dock operation", error);
@@ -61,7 +65,7 @@ const Navigation = ({ data }) => {
       <h3 className="ship-navigation__title">Navigation</h3>
       <button
         className="ship-navigation__btn-primary btn-disabled"
-        onClick={handleClickOrbit}
+        onClick={() => handleClickOrbit()}
         disabled={isTransited}
       >
         {isOrbited ? "Dock" : "Orbit"}

@@ -7,17 +7,18 @@ import {
 import { useShipContext } from "../../../context/shipContext";
 
 const Storage = ({ data }) => {
-  const { shipData, getMarket } = useShipContext();
-  const initialStorage = shipData?.inventory || data.cargo.inventory;
-  const initialSymbol = {
+  const { shipData, getMarket, sellCargo } = useShipContext();
+
+  const [storage, setStorage] = useState(
+    shipData?.inventory || data.cargo.inventory
+  );
+  const [symbol, setSymbol] = useState({
     systemSymbol: shipData?.nav?.systemSymbol || data.nav.systemSymbol,
     waypointSymbol: shipData?.nav?.waypointSymbol || data.nav.waypointSymbol,
-  };
-
-  const [storage, setStorage] = useState(initialStorage);
-  const [symbol, setSymbol] = useState(initialSymbol);
+  });
   const [market, setMarket] = useState({});
-  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState({});
+  const [quantity, setQuantity] = useState({});
 
   const handleGetMarket = async () => {
     try {
@@ -34,17 +35,34 @@ const Storage = ({ data }) => {
       return formattedMarket;
     } catch (error) {
       console.error("Error fetching market data:", error);
-      return null;
     }
   };
 
-  const handleSellItem = async (item) => {};
+  const handleSellItem = async (item) => {
+    setIsClicked({ ...isClicked, [item.symbol]: !isClicked[item.symbol] });
+    setQuantity({ ...quantity, [item.symbol]: 0 });
+
+    if (isClicked[item.symbol] && quantity[item.symbol] > 0) {
+      await sellCargo(item.symbol, data.symbol, quantity[item.symbol]);
+    }
+
+    console.log(quantity);
+  };
+
+  const handleChangeQuantity = (event, item) => {
+    setQuantity({ ...quantity, [item.symbol]: event.target.value });
+  };
 
   useEffect(() => {
-    const fetchData = async () => {
-      setStorage(initialStorage);
-      setSymbol(initialSymbol);
+    setStorage(shipData?.inventory || data.cargo.inventory);
+    setSymbol({
+      systemSymbol: shipData?.nav?.systemSymbol || data.nav.systemSymbol,
+      waypointSymbol: shipData?.nav?.waypointSymbol || data.nav.waypointSymbol,
+    });
+  }, [shipData]);
 
+  useEffect(() => {
+    const fetchMarket = async () => {
       const marketData = await handleGetMarket();
       if (marketData) {
         const matchingItems = marketData.filter((item) =>
@@ -58,13 +76,14 @@ const Storage = ({ data }) => {
         );
 
         setMarket(matchingItems);
+        console.log(matchingItems);
       } else {
         setMarket([]);
       }
     };
 
-    fetchData();
-  }, [shipData]);
+    fetchMarket();
+  }, [symbol.waypointSymbol]);
 
   return (
     <div className="ship-storage">
@@ -109,9 +128,22 @@ const Storage = ({ data }) => {
                         )
                     ) && (
                       <>
-                        <button onClick={() => setIsClicked(true)}>Sell</button>
+                        <button onClick={() => handleSellItem(item)}>
+                          Sell
+                        </button>
 
-                        {isClicked && <input type="number" min={0} />}
+                        {isClicked[item.symbol] && (
+                          <input
+                            type="number"
+                            name="quantity"
+                            min={1}
+                            onChange={(event) =>
+                              handleChangeQuantity(event, item)
+                            }
+                            placeholder="Quantity"
+                            value={quantity[item.symbol] || ""}
+                          />
+                        )}
                       </>
                     )}
                   </>

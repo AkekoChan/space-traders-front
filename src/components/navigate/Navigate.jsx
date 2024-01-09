@@ -48,7 +48,9 @@ const Dialog = ({ isOpen, onClose, ship }) => {
   const [changeWaypoint, setChangeWaypoint] = useState(
     shipData?.nav?.waypointSymbol || ship.nav.waypointSymbol
   );
-  const [isOrbited, setIsOrbited] = useState(ship.nav.status === "IN_ORBIT");
+  const [isOrbited, setIsOrbited] = useState(
+    shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"
+  );
   const [isFull, setIsFull] = useState(false);
   const [fuelCurrent, setFuelCurrent] = useState(ship.fuel.current);
   const [sortOrder, setSortOrder] = useState("asc");
@@ -142,6 +144,9 @@ const Dialog = ({ isOpen, onClose, ship }) => {
       );
       setFuelCurrent(shipData.fuel?.current || ship.fuel.current);
     }
+    setIsOrbited(
+      shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"
+    );
 
     if (waypoints.length === 0) {
       const fetchWaypoints = async () => {
@@ -262,7 +267,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                     className="navigate-btn__mode-primary"
                     onClick={handleClickOrbit}
                   >
-                    {isOrbited ? "Dock" : "Orbit"}
+                    {!isOrbited ? "Orbit" : "Dock"}
                   </button>
                   <div className="navigate-flight-mode">
                     <ul className="navigate-mode-list">

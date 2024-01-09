@@ -6,12 +6,15 @@ import "./extract.css";
 
 const Extract = ({ shipSymbol, userToken }) => {
   const { extractRessources, shipData, updateStorage } = useShipContext();
-  const [cooldown, setCooldown] = useState(shipData?.cooldown || null);
+  const [cooldown, setCooldown] = useState(
+    shipData?.cooldown?.remainingSeconds
+  );
+  const [endTime, setEndTime] = useState(shipData?.cooldown?.expiration);
   const [isExtracting, setIsExtracting] = useState(false);
 
   useEffect(() => {
-    setCooldown(shipData?.cooldown);
-    handleCooldownRunning();
+    setCooldown(shipData?.cooldown?.remainingSeconds);
+    setEndTime(shipData?.cooldown?.expiration);
   }, [shipData]);
 
   const handleClickExtract = async () => {
@@ -24,6 +27,11 @@ const Extract = ({ shipSymbol, userToken }) => {
       console.error(error);
       setIsExtracting(false);
     }
+  };
+
+  const handleCooldownEnd = async () => {
+    setIsExtracting(false);
+    await updateStorage(shipSymbol);
   };
 
   const handleCooldownRunning = async () => {
@@ -39,15 +47,16 @@ const Extract = ({ shipSymbol, userToken }) => {
     try {
       const data = await fetchData(options);
       setIsExtracting(data !== null);
+      setCooldown(data?.remainingSeconds);
+      setEndTime(data?.expiration);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const handleCooldownEnd = async () => {
-    setIsExtracting(false);
-    await updateStorage(shipSymbol);
-  };
+  useEffect(() => {
+    handleCooldownRunning();
+  }, []);
 
   return (
     <div className="extract">
@@ -60,8 +69,8 @@ const Extract = ({ shipSymbol, userToken }) => {
           Extract Resources
         </button>
         <Cooldown
-          startTime={cooldown?.remainingSeconds}
-          endTime={cooldown?.expiration}
+          startTime={cooldown}
+          endTime={endTime}
           onCooldownEnd={handleCooldownEnd}
         />
       </div>
