@@ -108,8 +108,15 @@
 .navigate-info-container {
   display: flex;
   align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
   gap: 1rem;
   width: 100%;
+}
+
+.navigate-info-wrapper {
+  display: flex;
+  gap: 1rem;
 }
 
 .navigate-info {
@@ -131,10 +138,6 @@
   display: flex;
   gap: 0.5rem;
   margin-top: 1.7rem;
-}
-
-.navigate-state {
-  margin-left: auto;
 }
 
 .navigate-state__list {
@@ -239,6 +242,7 @@
   width: 100%;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 1rem;
 }
 

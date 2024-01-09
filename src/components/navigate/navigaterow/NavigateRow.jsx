@@ -1,9 +1,6 @@
 import React, { useEffect, useState } from "react";
-
 import { SendOutlined, EnvironmentOutlined } from "@ant-design/icons";
-
 import { useShipContext } from "../../../context/shipContext";
-
 import {
   formatFirstLetterToUpperCase,
   replaceUnderscoreWithSpace,
@@ -24,15 +21,13 @@ const NavigateRow = ({
   const { shipData, shipNavigate } = useShipContext();
 
   const [flightModeShip, setFlightModeShip] = useState(
-    shipData && shipData.flightMode ? shipData.flightMode : flightMode
+    shipData?.flightMode || flightMode
   );
-  const [fuelCapacity, setFuelCapacity] = useState(
-    shipData && shipData.fuel ? shipData.fuel.current : fuel
+  const [fuelCurrent, setFuelCurrent] = useState(
+    shipData?.fuel?.current || fuel
   );
   const [isLocating, setIsLocating] = useState(
-    shipData && shipData.nav
-      ? shipData.nav.route.destination.symbol
-      : waypointShip
+    shipData?.nav?.route?.destination?.symbol || waypointShip
   );
 
   const multiplier = {
@@ -72,17 +67,17 @@ const NavigateRow = ({
 
   const handleClickNavigate = async () => {
     const res = await shipNavigate(waypoint.symbol, symbolShip);
-    setIsLocating(res.nav.route.destination.symbol);
+    setIsLocating(res?.nav?.route?.destination?.symbol);
   };
 
   useEffect(() => {
-    if (shipData && shipData.flightMode) {
+    if (shipData?.flightMode) {
       setFlightModeShip(shipData.flightMode);
     }
-    if (shipData && shipData.fuel) {
-      setFuelCapacity(shipData.fuel.current);
+    if (shipData?.fuel) {
+      setFuelCurrent(shipData.fuel.current);
     }
-    if (shipData && shipData.nav) {
+    if (shipData?.nav?.route?.destination?.symbol) {
       setIsLocating(shipData.nav.route.destination.symbol);
     }
   }, [shipData]);
@@ -102,16 +97,16 @@ const NavigateRow = ({
       </td>
       <td>
         <div className="navigate-table__traits">
-          {waypoint.traits.map((trait, index) => {
-            if (trait.name === "Marketplace" || trait.name === "Shipyard") {
-              return (
-                <span className="badge-gray" key={index}>
-                  {formatFirstLetterToUpperCase(trait.name)}
-                </span>
-              );
-            }
-            return null;
-          })}
+          {waypoint.traits
+            .filter(
+              (trait) =>
+                trait.name === "Marketplace" || trait.name === "Shipyard"
+            )
+            .map((trait, index) => (
+              <span className="badge-gray" key={index}>
+                {formatFirstLetterToUpperCase(trait.name)}
+              </span>
+            ))}
         </div>
       </td>
       <td>
@@ -119,9 +114,12 @@ const NavigateRow = ({
           className="navigate-table__button"
           onClick={handleClickNavigate}
           disabled={
-            isOrbited ||
-            getFuelConsumption(distanceToWaypoint, flightModeShip) >
-              fuelCapacity ||
+            !isOrbited ||
+            (fuelCurrent !== undefined &&
+              fuelCurrent !== null &&
+              fuelCurrent !== 0 &&
+              getFuelConsumption(distanceToWaypoint, flightModeShip) >
+                fuelCurrent) ||
             isLocating === waypoint.symbol
           }
         >

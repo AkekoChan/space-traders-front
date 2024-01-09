@@ -1,10 +1,9 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { useParams } from "react-router";
-
-import useFetch from "../../hook/useFetch";
 import { useNavigate } from "react-router";
 import { useAuthContext } from "../../context/authContext";
 import { ShipContextProvider } from "../../context/shipContext";
+import useFetch from "../../hook/useFetch";
 
 import { RedoOutlined, WarningOutlined } from "@ant-design/icons";
 import { ThreeDots } from "react-loader-spinner";
@@ -21,7 +20,6 @@ const Ship = () => {
   const { userToken } = useAuthContext();
   const { shipSymbol } = useParams();
   const [activeButton, setActiveButton] = useState("cargo");
-
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -45,9 +43,10 @@ const Ship = () => {
 
   const { data, isLoading, error, refetch } = useFetch(options);
 
+  // Utilisation de useMemo pour éviter le re-render inutile de Extract
   const memoizedExtractComponent = useMemo(
     () => <Extract shipSymbol={data.symbol} userToken={userToken} />,
-    [data.symbol]
+    [data.symbol, userToken]
   );
 
   return (

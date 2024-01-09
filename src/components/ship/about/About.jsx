@@ -1,65 +1,39 @@
 import React, { useEffect, useState } from "react";
-
 import { useShipContext } from "../../../context/shipContext";
-
 import Cooldown from "../../cooldown/Cooldown.jsx";
-
 import {
   formatFirstLetterToUpperCase,
   replaceUnderscoreWithSpace,
   formatDateToEuropean,
 } from "../../../utils";
-
 import "./about.css";
 import "../ship.css";
-
 import greaterThan from "../../../assets/icons/greater-than.svg";
 
 const About = ({ data }) => {
   const { shipData, orbitShip } = useShipContext();
-  const [status, setStatus] = useState(
-    shipData && shipData.nav ? shipData.nav.status : data.nav.status
-  );
-  const [flightMode, setFlightMode] = useState(
-    shipData && shipData.flightMode ? shipData.flightMode : data.nav.flightMode
-  );
+  const [status, setStatus] = useState(data.nav.status);
+  const [flightMode, setFlightMode] = useState(data.nav.flightMode);
   const [arrivalDate, setArrivalDate] = useState({
-    time:
-      shipData && shipData.nav
-        ? shipData.nav.route.arrival
-        : data.nav.route.arrival,
-    waypoint:
-      shipData && shipData.nav
-        ? shipData.nav.route.destination.symbol
-        : data.nav.route.destination.symbol,
-    type:
-      shipData && shipData.nav
-        ? shipData.nav.route.destination.type
-        : data.nav.route.destination.type,
+    time: data.nav.route.arrival,
+    waypoint: data.nav.route.destination.symbol,
+    type: data.nav.route.destination.type,
   });
   const [departureDate, setDepartureDate] = useState({
-    time:
-      shipData && shipData.nav
-        ? shipData.nav.route.departureTime
-        : data.nav.route.departureTime,
-    waypoint:
-      shipData && shipData.nav
-        ? shipData.nav.route.departure.symbol
-        : data.nav.route.departure.symbol,
+    time: data.nav.route.departureTime,
+    waypoint: data.nav.route.departure.symbol,
   });
 
   const handleCooldownEnd = () => {
-    orbitShip(data.symbol);
+    setTimeout(async () => {
+      await orbitShip(data.symbol);
+    }, 3000);
   };
 
   useEffect(() => {
     if (shipData && shipData.nav) {
       setStatus(shipData.nav.status);
-    }
-    if (shipData && shipData.flightMode) {
-      setFlightMode(shipData.flightMode);
-    }
-    if (shipData && shipData.nav) {
+      setFlightMode(shipData.nav.flightMode);
       setArrivalDate({
         time: shipData.nav.route.arrival,
         waypoint: shipData.nav.route.destination.symbol,

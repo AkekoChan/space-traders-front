@@ -1,24 +1,20 @@
 import React, { useEffect, useState } from "react";
 import { useShipContext } from "../../../context/shipContext";
-
 import "../ship.css";
 import "./state.css";
-
-import fuel from "../../../assets/icons/fuel.svg";
-import cargo from "../../../assets/icons/cargo.svg";
-import wrench from "../../../assets/icons/wrench.svg";
+import fuelIcon from "../../../assets/icons/fuel.svg";
+import cargoIcon from "../../../assets/icons/cargo.svg";
+import wrenchIcon from "../../../assets/icons/wrench.svg";
 
 const State = ({ data }) => {
-  console.log(data);
   const { shipData, refuelShip } = useShipContext();
-  const [isFull, setIsFull] = useState(false);
-  const [isDocked, setIsDocked] = useState(
-    shipData && shipData.nav ? shipData.nav.status : data.nav.status
+
+  const [isFull, setIsFull] = useState(
+    data.fuel.current === data.fuel.capacity
   );
+  const [isDocked, setIsDocked] = useState(data.nav.status);
   const [fuelCapacity, setFuelCapacity] = useState(data.fuel.current);
-  const [cargoUnits, setCargoUnits] = useState(
-    shipData && shipData.cargo ? shipData.cargo.units : data.cargo.units
-  );
+  const [cargoUnits, setCargoUnits] = useState(data.cargo.units);
 
   useEffect(() => {
     if (shipData && shipData.nav) {
@@ -47,6 +43,7 @@ const State = ({ data }) => {
       console.error("Error in refuel operation", error);
     }
   };
+
   return (
     <div className="ship-state">
       <h3 className="ship-state__title">State</h3>
@@ -54,7 +51,7 @@ const State = ({ data }) => {
         <li className="ship-state__item">
           <p>Fuel</p>
           <div className="ship-state__item-value-container">
-            <img src={fuel} alt="Fuel Icon" />
+            <img src={fuelIcon} alt="Fuel Icon" />
             <span className="ship-state__item-value">
               {fuelCapacity} / {data.fuel.capacity}
             </span>
@@ -72,7 +69,7 @@ const State = ({ data }) => {
         <li className="ship-state__item">
           <p>Cargo</p>
           <div className="ship-state__item-value-container">
-            <img src={cargo} alt="Cargo Icon" />
+            <img src={cargoIcon} alt="Cargo Icon" />
             <span className="ship-state__item-value">
               {cargoUnits} / {data.cargo.capacity}
             </span>
@@ -81,7 +78,7 @@ const State = ({ data }) => {
         <li className="ship-state__item">
           <p>Condition</p>
           <div className="ship-state__item-value-container">
-            <img src={wrench} alt="Wrench Icon" />
+            <img src={wrenchIcon} alt="Wrench Icon" />
             <span className="ship-state__item-value">
               {data.frame.condition} / 100
             </span>

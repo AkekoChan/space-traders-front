@@ -11,24 +11,22 @@ import {
 
 import { formatFirstLetterToUpperCase, distance } from "../../utils";
 import { useShipContext } from "../../context/shipContext";
-
-import "./navigate.css";
-
+import NavigateRow from "./navigaterow/NavigateRow.jsx";
 import {
   CloseOutlined,
   SortAscendingOutlined,
   SortDescendingOutlined,
 } from "@ant-design/icons";
 
-import fuel from "../../assets/icons/fuel.svg";
-import cargo from "../../assets/icons/cargo.svg";
-import wrench from "../../assets/icons/wrench.svg";
-import fastForwad from "../../assets/icons/fast-forward.svg";
-import fastBackward from "../../assets/icons/fast-backward.svg";
-import burn from "../../assets/icons/burn.svg";
-import eyeSlash from "../../assets/icons/eye-slash.svg";
+import fuelIcon from "../../assets/icons/fuel.svg";
+import cargoIcon from "../../assets/icons/cargo.svg";
+import wrenchIcon from "../../assets/icons/wrench.svg";
+import fastForwardIcon from "../../assets/icons/fast-forward.svg";
+import fastBackwardIcon from "../../assets/icons/fast-backward.svg";
+import burnIcon from "../../assets/icons/burn.svg";
+import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 
-import NavigateRow from "./navigaterow/NavigateRow.jsx";
+import "./navigate.css";
 
 const Dialog = ({ isOpen, onClose, ship }) => {
   const {
@@ -39,27 +37,30 @@ const Dialog = ({ isOpen, onClose, ship }) => {
     refuelShip,
     fetchSystemWaypoints,
   } = useShipContext();
+
   const [coordinatesShip, setCoordinatesShip] = useState({});
   const [status, setStatus] = useState(
-    shipData && shipData.nav ? shipData.nav.status : ship.nav.status
+    shipData?.nav?.status || ship.nav.status
   );
   const [flightMode, setFlightMode] = useState(
-    shipData && shipData.flightMode ? shipData.flightMode : ship.nav.flightMode
+    shipData?.flightMode || ship.nav.flightMode
   );
   const [changeWaypoint, setChangeWaypoint] = useState(
-    shipData && shipData.nav
-      ? shipData.nav.waypointSymbol
-      : ship.nav.waypointSymbol
+    shipData?.nav?.waypointSymbol || ship.nav.waypointSymbol
   );
   const [isOrbited, setIsOrbited] = useState(ship.nav.status === "IN_ORBIT");
   const [isFull, setIsFull] = useState(false);
-  const [fuelCapacity, setFuelCapacity] = useState(ship.fuel.current);
+  const [fuelCurrent, setFuelCurrent] = useState(ship.fuel.current);
   const [sortOrder, setSortOrder] = useState("asc");
   const [waypoints, setWaypoints] = useState(
-    JSON.parse(localStorage.getItem("waypoints"))
+    JSON.parse(localStorage.getItem("waypoints")) || []
   );
 
   const sortWaypoints = (waypoints, order) => {
+    if (!waypoints) {
+      return [];
+    }
+
     return waypoints.slice().sort((a, b) => {
       const distanceA = distance(
         a.x,
@@ -81,18 +82,15 @@ const Dialog = ({ isOpen, onClose, ship }) => {
   const sortedWaypoints = sortWaypoints(waypoints, sortOrder);
 
   const handleSortByDistance = () => {
-    const newOrder = sortOrder === "asc" ? "desc" : "asc";
-    setSortOrder(newOrder);
+    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
   const handleClickOrbit = async () => {
     try {
       if (isOrbited) {
-        console.log(isOrbited);
         await dockShip(ship.symbol);
         setIsOrbited(false);
       } else {
-        console.log(isOrbited);
         await orbitShip(ship.symbol);
         setIsOrbited(true);
       }
@@ -116,7 +114,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
     try {
       const res = await refuelShip(ship.symbol);
       setIsFull(res.fuel.current === res.fuel.capacity);
-      setFuelCapacity(res.fuel.current);
+      setFuelCurrent(res.fuel.current);
     } catch (error) {
       console.error("Error in refuel operation", error);
     }
@@ -136,39 +134,16 @@ const Dialog = ({ isOpen, onClose, ship }) => {
   const { getFloatingProps } = useInteractions([click, dismiss, role]);
 
   useEffect(() => {
-    if (shipData && shipData.nav) {
-      setStatus(shipData.nav.status);
+    if (shipData) {
+      setStatus(shipData.nav?.status || ship.nav.status);
+      setFlightMode(shipData?.flightMode || ship.nav.flightMode);
+      setChangeWaypoint(
+        shipData.nav?.waypointSymbol || ship.nav.waypointSymbol
+      );
+      setFuelCurrent(shipData.fuel?.current || ship.fuel.current);
     }
 
-    if (shipData && shipData.flightMode) {
-      setFlightMode(shipData.flightMode);
-    }
-
-    if (shipData && shipData.nav) {
-      setIsOrbited(shipData.nav.status === "IN_ORBIT");
-    }
-
-    if (fuelCapacity === ship.fuel.capacity) {
-      setIsFull(true);
-    }
-
-    if (
-      shipData &&
-      shipData.fuel &&
-      shipData.fuel.current === ship.fuel.capacity
-    ) {
-      setFuelCapacity(true);
-    }
-
-    if (shipData && shipData.fuel) {
-      setFuelCapacity(shipData.fuel.current);
-    }
-
-    if (shipData && shipData.nav) {
-      setChangeWaypoint(shipData.nav.waypointSymbol);
-    }
-
-    if (!waypoints) {
+    if (waypoints.length === 0) {
       const fetchWaypoints = async () => {
         await fetchSystemWaypoints(ship.nav.systemSymbol);
       };
@@ -180,7 +155,6 @@ const Dialog = ({ isOpen, onClose, ship }) => {
       y: ship.nav.route.destination.y,
     });
   }, [shipData]);
-
   return (
     <>
       {isOpen && (
@@ -212,30 +186,32 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                   </button>
                 </div>
                 <div className="navigate-info-container">
-                  <div className="navigate-info">
-                    <p>System</p>
-                    <span className="navigate-system badge-gradient">
-                      {ship.nav.systemSymbol}
-                    </span>
-                  </div>
-                  <div className="navigate-info">
-                    <p>Waypoint</p>
-                    <span className="navigate-waypoint badge-gradient">
-                      {changeWaypoint}
-                    </span>
-                  </div>
-                  <div className="navigate-status">
-                    <div className="navigate-badges">
-                      {status === "IN_ORBIT" ? (
-                        <span className="badge-gray">In orbit</span>
-                      ) : status === "DOCKED" ? (
-                        <span className=" badge-gray">Docked</span>
-                      ) : (
-                        <span className="badge-gray">In transit</span>
-                      )}
-                      <span className="badge-gray">
-                        {formatFirstLetterToUpperCase(flightMode)}
+                  <div className="navigate-info-wrapper">
+                    <div className="navigate-info">
+                      <p>System</p>
+                      <span className="navigate-system badge-gradient">
+                        {ship.nav.systemSymbol}
                       </span>
+                    </div>
+                    <div className="navigate-info">
+                      <p>Waypoint</p>
+                      <span className="navigate-waypoint badge-gradient">
+                        {changeWaypoint}
+                      </span>
+                    </div>
+                    <div className="navigate-status">
+                      <div className="navigate-badges">
+                        {status === "IN_ORBIT" ? (
+                          <span className="badge-gray">In orbit</span>
+                        ) : status === "DOCKED" ? (
+                          <span className=" badge-gray">Docked</span>
+                        ) : (
+                          <span className="badge-gray">In transit</span>
+                        )}
+                        <span className="badge-gray">
+                          {formatFirstLetterToUpperCase(flightMode)}
+                        </span>
+                      </div>
                     </div>
                   </div>
                   <div className="navigate-state">
@@ -243,9 +219,9 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                       <li className="navigate-state__item">
                         <p>Fuel</p>
                         <div className="navigate-state__item-value-container">
-                          <img src={fuel} alt="Fuel Icon" />
+                          <img src={fuelIcon} alt="Fuel Icon" />
                           <span className="navigate-state__item-value">
-                            {fuelCapacity} / {ship.fuel.capacity}
+                            {fuelCurrent} / {ship.fuel.capacity}
                           </span>
                         </div>
                         <button
@@ -263,7 +239,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                       <li className="navigate-state__item">
                         <p>Cargo</p>
                         <div className="navigate-state__item-value-container">
-                          <img src={cargo} alt="Cargo Icon" />
+                          <img src={cargoIcon} alt="Cargo Icon" />
                           <span className="navigate-state__item-value">
                             {ship.cargo.units} / {ship.cargo.capacity}
                           </span>
@@ -272,7 +248,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                       <li className="navigate-state__item">
                         <p>Condition</p>
                         <div className="navigate-state__item-value-container">
-                          <img src={wrench} alt="Wrench Icon" />
+                          <img src={wrenchIcon} alt="Wrench Icon" />
                           <span className="navigate-state__item-value">
                             {ship.frame.condition} / 100
                           </span>
@@ -295,7 +271,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                           className="navigate-btn__mode-secondary"
                           onClick={() => handleClickMode("CRUISE")}
                         >
-                          <img src={fastForwad} alt="Fast Forward Icon" />
+                          <img src={fastForwardIcon} alt="Fast Forward Icon" />
                           Cruise
                         </button>
                       </li>
@@ -304,7 +280,10 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                           className="navigate-btn__mode-secondary"
                           onClick={() => handleClickMode("DRIFT")}
                         >
-                          <img src={fastBackward} alt="Fast Backward Icon" />
+                          <img
+                            src={fastBackwardIcon}
+                            alt="Fast Backward Icon"
+                          />
                           Drift
                         </button>
                       </li>
@@ -313,7 +292,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                           className="navigate-btn__mode-secondary"
                           onClick={() => handleClickMode("BURN")}
                         >
-                          <img src={burn} alt="Burn Icon" />
+                          <img src={burnIcon} alt="Burn Icon" />
                           Burn
                         </button>
                       </li>
@@ -322,7 +301,7 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                           className="navigate-btn__mode-secondary"
                           onClick={() => handleClickMode("STEALTH")}
                         >
-                          <img src={eyeSlash} alt="Eye Slash Icon" />
+                          <img src={eyeSlashIcon} alt="Eye Slash Icon" />
                           Stealth
                         </button>
                       </li>
@@ -367,8 +346,9 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                         symbolShip={ship.symbol}
                         waypointShip={ship.nav.waypointSymbol}
                         flightMode={flightMode}
-                        isOrbited={!isOrbited}
-                        fuel={fuelCapacity}
+                        isOrbited={isOrbited}
+                        fuel={fuelCurrent}
+                        fuelCapacity={ship.fuel.capacity}
                       />
                     ))}
                   </tbody>

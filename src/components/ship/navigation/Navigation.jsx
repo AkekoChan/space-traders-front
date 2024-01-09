@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useShipContext } from "../../../context/shipContext";
-
 import Navigate from "../../navigate/Navigate.jsx";
-
 import "./navigation.css";
 import "../ship.css";
-
 import fastForwad from "../../../assets/icons/fast-forward.svg";
 import fastBackward from "../../../assets/icons/fast-backward.svg";
 import burn from "../../../assets/icons/burn.svg";
@@ -15,14 +12,10 @@ const Navigation = ({ data }) => {
   const { orbitShip, dockShip, updateNavigationMode, shipData } =
     useShipContext();
   const [isOrbited, setIsOrbited] = useState(
-    shipData && shipData.nav
-      ? shipData.nav.status === "IN_ORBIT"
-      : data.nav.status === "IN_ORBIT"
+    shipData?.nav?.status === "IN_ORBIT" || data.nav.status === "IN_ORBIT"
   );
   const [isTransited, setIsTransited] = useState(
-    shipData && shipData.nav
-      ? shipData.nav.status === "IN_TRANSIT"
-      : data.nav.status === "IN_TRANSIT"
+    shipData?.nav?.status === "IN_TRANSIT" || data.nav.status === "IN_TRANSIT"
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -57,10 +50,8 @@ const Navigation = ({ data }) => {
   };
 
   useEffect(() => {
-    if (shipData && shipData.nav) {
+    if (shipData?.nav) {
       setIsOrbited(shipData.nav.status === "IN_ORBIT");
-    }
-    if (shipData && shipData.nav) {
       setIsTransited(shipData.nav.status === "IN_TRANSIT");
     }
   }, [shipData]);

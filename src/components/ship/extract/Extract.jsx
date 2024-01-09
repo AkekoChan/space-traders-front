@@ -1,25 +1,18 @@
-import React, { useEffect, useState, memo } from "react";
-
+import { useEffect, useState } from "react";
 import { useShipContext } from "../../../context/shipContext";
 import { fetchData } from "../../../utils";
-
 import Cooldown from "../../cooldown/Cooldown.jsx";
-
 import "./extract.css";
 
 const Extract = ({ shipSymbol, userToken }) => {
   const { extractRessources, shipData, updateStorage } = useShipContext();
-  const [cooldown, setCooldown] = useState(
-    shipData && shipData.cooldown ? shipData.cooldown : null
-  );
+  const [cooldown, setCooldown] = useState(shipData?.cooldown || null);
   const [isExtracting, setIsExtracting] = useState(false);
 
   useEffect(() => {
-    if (shipData) {
-      setCooldown(shipData.cooldown);
-    }
+    setCooldown(shipData?.cooldown);
     handleCooldownRunning();
-  }, [shipData, cooldown]);
+  }, [shipData]);
 
   const handleClickExtract = async () => {
     setIsExtracting(true);
@@ -29,9 +22,7 @@ const Extract = ({ shipSymbol, userToken }) => {
       console.log(response);
     } catch (error) {
       console.error(error);
-
       setIsExtracting(false);
-      console.log(isExtracting);
     }
   };
 
@@ -47,15 +38,13 @@ const Extract = ({ shipSymbol, userToken }) => {
 
     try {
       const data = await fetchData(options);
-      console.log(data);
-      data === null ? setIsExtracting(false) : setIsExtracting(true);
+      setIsExtracting(data !== null);
     } catch (error) {
       console.error(error);
     }
   };
 
   const handleCooldownEnd = async () => {
-    console.log("Cooldown ended");
     setIsExtracting(false);
     await updateStorage(shipSymbol);
   };
@@ -68,7 +57,7 @@ const Extract = ({ shipSymbol, userToken }) => {
           onClick={handleClickExtract}
           disabled={isExtracting}
         >
-          Extract Ressources
+          Extract Resources
         </button>
         <Cooldown
           startTime={cooldown?.remainingSeconds}
@@ -80,4 +69,4 @@ const Extract = ({ shipSymbol, userToken }) => {
   );
 };
 
-export default memo(Extract);
+export default Extract;

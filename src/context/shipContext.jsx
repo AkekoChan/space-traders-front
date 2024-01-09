@@ -1,4 +1,3 @@
-// shipContext.js
 import { createContext, useContext, useState, useEffect } from "react";
 import { useAuthContext } from "./authContext";
 import { fetchData } from "../utils";
@@ -8,6 +7,16 @@ const ShipContext = createContext();
 export const ShipContextProvider = ({ children }) => {
   const { userToken } = useAuthContext();
   const [shipData, setShipData] = useState({});
+
+  const updateShipData = async (options) => {
+    try {
+      const result = await fetchData(options);
+      setShipData(result);
+      return result;
+    } catch (error) {
+      console.error(`Error: ${options.method} ${options.endpoint}`, error);
+    }
+  };
 
   const dockShip = async (shipSymbol) => {
     const options = {
@@ -20,13 +29,7 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
 
-    try {
-      const result = await fetchData(options);
-      setShipData(result);
-      return result;
-    } catch (error) {
-      console.error("Error docking ship:", error);
-    }
+    return updateShipData(options);
   };
 
   const orbitShip = async (shipSymbol) => {
@@ -40,13 +43,7 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
 
-    try {
-      const result = await fetchData(options);
-      setShipData(result);
-      return result;
-    } catch (error) {
-      console.error("Error orbiting ship:", error);
-    }
+    return updateShipData(options);
   };
 
   const updateNavigationMode = async (shipSymbol, mode) => {
@@ -60,13 +57,8 @@ export const ShipContextProvider = ({ children }) => {
       },
       body: `{"flightMode": "${mode}"}`,
     };
-    try {
-      const result = await fetchData(options);
-      setShipData(result);
-      return result;
-    } catch (error) {
-      console.error("Error updating ship navigation mode:", error);
-    }
+
+    return updateShipData(options);
   };
 
   const refuelShip = async (shipSymbol) => {
@@ -80,13 +72,7 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
 
-    try {
-      const result = await fetchData(options);
-      setShipData(result);
-      return result;
-    } catch (error) {
-      console.error("Error refueling ship:", error);
-    }
+    return updateShipData(options);
   };
 
   const fetchSystemWaypoints = async (systemSymbol) => {
@@ -149,14 +135,8 @@ export const ShipContextProvider = ({ children }) => {
       },
       body: `{"waypointSymbol": "${waypoint}"}`,
     };
-    try {
-      const result = await fetchData(options);
-      setShipData(result);
-      console.log("Ship navigation result:", result);
-      return result;
-    } catch (error) {
-      console.error("Error navigating ship:", error);
-    }
+
+    return updateShipData(options);
   };
 
   const extractRessources = async (shipSymbol) => {
@@ -168,13 +148,8 @@ export const ShipContextProvider = ({ children }) => {
         Authorization: `Bearer ${userToken}`,
       },
     };
-    try {
-      const result = await fetchData(options);
-      setShipData(result);
-      return result;
-    } catch (error) {
-      throw error;
-    }
+
+    return updateShipData(options);
   };
 
   const updateStorage = async (shipSymbol) => {
@@ -186,12 +161,36 @@ export const ShipContextProvider = ({ children }) => {
         Authorization: `Bearer ${userToken}`,
       },
     };
-    try {
-      const result = await fetchData(options);
-      setShipData(result);
-    } catch (error) {
-      throw error;
-    }
+
+    return updateShipData(options);
+  };
+
+  const getMarket = async (systemSymbol, waypointSymbol) => {
+    const options = {
+      endpoint: `systems/${systemSymbol}/waypoints/${waypointSymbol}/market`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+
+    return fetchData(options);
+  };
+
+  const sellItem = async (item, shipSymbol, units) => {
+    const options = {
+      endpoint: `my/ships/${shipSymbol}/sell`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: `{"symbol":"${item}","units":"${units}"}`,
+    };
+
+    return fetchData(options);
   };
 
   const contextValue = {
@@ -204,6 +203,8 @@ export const ShipContextProvider = ({ children }) => {
     shipNavigate,
     extractRessources,
     updateStorage,
+    getMarket,
+    sellItem,
   };
 
   return (
