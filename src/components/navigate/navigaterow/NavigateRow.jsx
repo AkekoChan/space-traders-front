@@ -14,18 +14,15 @@ const NavigateRow = ({
   speedShip,
   flightMode,
   isOrbited,
-  fuel,
   symbolShip,
   waypointShip,
 }) => {
-  const { shipData, shipNavigate } = useShipContext();
+  const { shipData, shipNavigate, fuel, updateFuel } = useShipContext();
 
   const [flightModeShip, setFlightModeShip] = useState(
     shipData?.flightMode || flightMode
   );
-  const [fuelCurrent, setFuelCurrent] = useState(
-    shipData?.fuel?.current || fuel
-  );
+
   const [isLocating, setIsLocating] = useState(
     shipData?.nav?.route?.destination?.symbol || waypointShip
   );
@@ -67,15 +64,13 @@ const NavigateRow = ({
 
   const handleClickNavigate = async () => {
     const res = await shipNavigate(waypoint.symbol, symbolShip);
+    updateFuel(res.fuel);
     setIsLocating(res?.nav?.route?.destination?.symbol);
   };
 
   useEffect(() => {
     if (shipData?.flightMode) {
       setFlightModeShip(shipData.flightMode);
-    }
-    if (shipData?.fuel) {
-      setFuelCurrent(shipData.fuel.current);
     }
     if (shipData?.nav?.route?.destination?.symbol) {
       setIsLocating(shipData.nav.route.destination.symbol);
@@ -115,11 +110,11 @@ const NavigateRow = ({
           onClick={handleClickNavigate}
           disabled={
             !isOrbited ||
-            (fuelCurrent !== undefined &&
-              fuelCurrent !== null &&
-              fuelCurrent !== 0 &&
+            (fuel.current !== undefined &&
+              fuel.current !== null &&
+              fuel.current !== 0 &&
               getFuelConsumption(distanceToWaypoint, flightModeShip) >
-                fuelCurrent) ||
+                fuel.current) ||
             isLocating === waypoint.symbol
           }
         >

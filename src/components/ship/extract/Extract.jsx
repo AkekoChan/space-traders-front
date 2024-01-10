@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useShipContext } from "../../../context/shipContext";
 import { fetchData } from "../../../utils";
 import Cooldown from "../../cooldown/Cooldown.jsx";
@@ -12,6 +12,9 @@ const Extract = ({ shipSymbol, userToken }) => {
   const [endTime, setEndTime] = useState(shipData?.cooldown?.expiration);
   const [isExtracting, setIsExtracting] = useState(false);
 
+  // Utilisez useRef pour stocker la valeur initiale du cooldown
+  const initialCooldownRef = useRef(shipData?.cooldown?.remainingSeconds);
+
   useEffect(() => {
     setCooldown(shipData?.cooldown?.remainingSeconds);
     setEndTime(shipData?.cooldown?.expiration);
@@ -23,6 +26,7 @@ const Extract = ({ shipSymbol, userToken }) => {
     try {
       const response = await extractRessources(shipSymbol);
       console.log(response);
+      updateStorage(response.cargo);
     } catch (error) {
       console.error(error);
       setIsExtracting(false);
@@ -31,7 +35,9 @@ const Extract = ({ shipSymbol, userToken }) => {
 
   const handleCooldownEnd = async () => {
     setIsExtracting(false);
-    await updateStorage(shipSymbol);
+
+    // Réinitialisez le cooldown à sa valeur initiale
+    setCooldown(initialCooldownRef.current);
   };
 
   const handleCooldownRunning = async () => {
@@ -49,6 +55,11 @@ const Extract = ({ shipSymbol, userToken }) => {
       setIsExtracting(data !== null);
       setCooldown(data?.remainingSeconds);
       setEndTime(data?.expiration);
+
+      // Mettez à jour la valeur initiale du cooldown lorsque le cooldown commence
+      if (data?.remainingSeconds !== undefined && !isExtracting) {
+        initialCooldownRef.current = data.remainingSeconds;
+      }
     } catch (error) {
       console.error(error);
     }

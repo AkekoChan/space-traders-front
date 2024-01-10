@@ -7,29 +7,39 @@ import cargoIcon from "../../../assets/icons/cargo.svg";
 import wrenchIcon from "../../../assets/icons/wrench.svg";
 
 const State = ({ data }) => {
-  const { shipData, refuelShip } = useShipContext();
+  const { shipData, refuelShip, updateFuel, fuel, getFuel } = useShipContext();
 
-  const [isFull, setIsFull] = useState(
-    data.fuel.current === data.fuel.capacity
-  );
+  const [isFull, setIsFull] = useState(fuel === data.fuel.capacity);
   const [isDocked, setIsDocked] = useState(data.nav.status);
-  const [fuelCapacity, setFuelCapacity] = useState(data.fuel.current);
   const [cargoUnits, setCargoUnits] = useState(data.cargo.units);
 
   useEffect(() => {
     if (shipData && shipData.nav) {
       setIsDocked(shipData.nav.status);
     }
-    if (data.fuel.current === data.fuel.capacity) {
+    if (fuel === data.fuel.capacity) {
       setIsFull(true);
-    }
-    if (shipData && shipData.fuel) {
-      setFuelCapacity(shipData.fuel.current);
     }
     if (shipData && shipData.cargo) {
       setCargoUnits(shipData.cargo.units);
     }
-  }, [shipData]);
+  }, [shipData, fuel]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const fuelData = await getFuel(data.symbol);
+        if (fuelData) {
+          updateFuel(fuelData);
+          setIsFull(fuelData.current === data.fuel.capacity);
+        }
+      } catch (error) {
+        console.error("Error fetching fuel data", error);
+      }
+    };
+
+    fetchData();
+  }, [data.symbol]);
 
   const handleClickRefuel = async () => {
     if (isFull || isDocked === "IN_ORBIT" || isDocked === "IN_TRANSIT") {
@@ -37,8 +47,8 @@ const State = ({ data }) => {
     }
     try {
       const res = await refuelShip(data.symbol);
+      updateFuel(res.fuel);
       setIsFull(res.fuel.current === res.fuel.capacity);
-      setFuelCapacity(res.fuel.current);
     } catch (error) {
       console.error("Error in refuel operation", error);
     }
@@ -53,7 +63,8 @@ const State = ({ data }) => {
           <div className="ship-state__item-value-container">
             <img src={fuelIcon} alt="Fuel Icon" />
             <span className="ship-state__item-value">
-              {fuelCapacity} / {data.fuel.capacity}
+              {fuel?.current !== undefined ? fuel.current : "N/A"} /{" "}
+              {data.fuel.capacity}
             </span>
           </div>
           <button

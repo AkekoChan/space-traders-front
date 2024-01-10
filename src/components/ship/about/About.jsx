@@ -31,17 +31,24 @@ const About = ({ data }) => {
   };
 
   useEffect(() => {
-    if (shipData && shipData.nav) {
-      setStatus(shipData.nav.status);
-      setFlightMode(shipData.nav.flightMode);
+    if (shipData) {
+      setStatus(shipData?.nav?.status || data.nav.status || shipData?.status);
+      setFlightMode(shipData?.flightMode || data.nav.flightMode);
       setArrivalDate({
-        time: shipData.nav.route.arrival,
-        waypoint: shipData.nav.route.destination.symbol,
-        type: shipData.nav.route.destination.type,
+        time: shipData?.nav?.route?.arrival || data.nav.route.arrival,
+        waypoint:
+          shipData?.nav?.route?.destination?.symbol ||
+          data.nav.route.destination.symbol,
+        type:
+          shipData?.nav?.route?.destination?.type ||
+          data.nav.route.destination.type,
       });
       setDepartureDate({
-        time: shipData.nav.route.departureTime,
-        waypoint: shipData.nav.route.departure.symbol,
+        time:
+          shipData?.nav?.route?.departureTime || data.nav.route.departureTime,
+        waypoint:
+          shipData?.nav?.route?.departure?.symbol ||
+          data.nav.route.departure.symbol,
       });
     }
   }, [shipData]);

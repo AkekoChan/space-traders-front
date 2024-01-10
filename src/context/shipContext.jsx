@@ -7,6 +7,8 @@ const ShipContext = createContext();
 export const ShipContextProvider = ({ children }) => {
   const { userToken } = useAuthContext();
   const [shipData, setShipData] = useState({});
+  const [cargo, setCargo] = useState();
+  const [fuel, setFuel] = useState();
 
   const updateShipData = async (options) => {
     try {
@@ -73,6 +75,27 @@ export const ShipContextProvider = ({ children }) => {
     };
 
     return updateShipData(options);
+  };
+
+  const updateFuel = (fuel) => {
+    setFuel(fuel);
+  };
+
+  const getFuel = async (shipSymbol) => {
+    const options = {
+      endpoint: `my/ships/${shipSymbol}`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+    try {
+      const data = await fetchData(options);
+      setFuel(data.fuel);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const fetchSystemWaypoints = async (systemSymbol) => {
@@ -152,7 +175,11 @@ export const ShipContextProvider = ({ children }) => {
     return updateShipData(options);
   };
 
-  const updateStorage = async (shipSymbol) => {
+  const updateStorage = (cargo) => {
+    setCargo(cargo);
+  };
+
+  const getCargo = async (shipSymbol) => {
     const options = {
       endpoint: `my/ships/${shipSymbol}/cargo`,
       method: "GET",
@@ -161,8 +188,12 @@ export const ShipContextProvider = ({ children }) => {
         Authorization: `Bearer ${userToken}`,
       },
     };
-
-    return updateShipData(options);
+    try {
+      const data = await fetchData(options);
+      setCargo(data);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getMarket = async (systemSymbol, waypointSymbol) => {
@@ -190,7 +221,7 @@ export const ShipContextProvider = ({ children }) => {
       body: `{"symbol":"${item}","units":"${units}"}`,
     };
 
-    return updateShipData(options) && updateStorage(shipSymbol);
+    return updateShipData(options);
   };
 
   const contextValue = {
@@ -205,6 +236,11 @@ export const ShipContextProvider = ({ children }) => {
     updateStorage,
     getMarket,
     sellCargo,
+    cargo,
+    getCargo,
+    updateFuel,
+    fuel,
+    getFuel,
   };
 
   return (

@@ -29,14 +29,8 @@ import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import "./navigate.css";
 
 const Dialog = ({ isOpen, onClose, ship }) => {
-  const {
-    shipData,
-    orbitShip,
-    dockShip,
-    updateNavigationMode,
-    refuelShip,
-    fetchSystemWaypoints,
-  } = useShipContext();
+  const { shipData, updateNavigationMode, fetchSystemWaypoints, fuel } =
+    useShipContext();
 
   const [coordinatesShip, setCoordinatesShip] = useState({});
   const [status, setStatus] = useState(
@@ -51,8 +45,6 @@ const Dialog = ({ isOpen, onClose, ship }) => {
   const [isOrbited, setIsOrbited] = useState(
     shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"
   );
-  const [isFull, setIsFull] = useState(false);
-  const [fuelCurrent, setFuelCurrent] = useState(ship.fuel.current);
   const [sortOrder, setSortOrder] = useState("asc");
   const [waypoints, setWaypoints] = useState(
     JSON.parse(localStorage.getItem("waypoints")) || []
@@ -87,38 +79,11 @@ const Dialog = ({ isOpen, onClose, ship }) => {
     setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
   };
 
-  const handleClickOrbit = async () => {
-    try {
-      if (isOrbited) {
-        await dockShip(ship.symbol);
-        setIsOrbited(false);
-      } else {
-        await orbitShip(ship.symbol);
-        setIsOrbited(true);
-      }
-    } catch (error) {
-      console.error("Error in orbit/dock operation", error);
-    }
-  };
-
   const handleClickMode = async (mode) => {
     try {
       await updateNavigationMode(ship.symbol, mode);
     } catch (error) {
       console.error("Error in navigation operation", error);
-    }
-  };
-
-  const handleClickRefuel = async () => {
-    if (isFull || status === "IN_ORBIT" || status === "IN_TRANSIT") {
-      return;
-    }
-    try {
-      const res = await refuelShip(ship.symbol);
-      setIsFull(res.fuel.current === res.fuel.capacity);
-      setFuelCurrent(res.fuel.current);
-    } catch (error) {
-      console.error("Error in refuel operation", error);
     }
   };
 
@@ -142,11 +107,10 @@ const Dialog = ({ isOpen, onClose, ship }) => {
       setChangeWaypoint(
         shipData.nav?.waypointSymbol || ship.nav.waypointSymbol
       );
-      setFuelCurrent(shipData.fuel?.current || ship.fuel.current);
+      setIsOrbited(
+        shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"
+      );
     }
-    setIsOrbited(
-      shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"
-    );
 
     if (waypoints.length === 0) {
       const fetchWaypoints = async () => {
@@ -226,20 +190,9 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                         <div className="navigate-state__item-value-container">
                           <img src={fuelIcon} alt="Fuel Icon" />
                           <span className="navigate-state__item-value">
-                            {fuelCurrent} / {ship.fuel.capacity}
+                            {fuel.current} / {ship.fuel.capacity}
                           </span>
                         </div>
-                        <button
-                          className="navigate-sate__item-button"
-                          onClick={handleClickRefuel}
-                          disabled={
-                            isFull ||
-                            status === "IN_ORBIT" ||
-                            status === "IN_TRANSIT"
-                          }
-                        >
-                          Refuel
-                        </button>
                       </li>
                       <li className="navigate-state__item">
                         <p>Cargo</p>
@@ -263,12 +216,6 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                   </div>
                 </div>
                 <div className="navigate-buttons">
-                  <button
-                    className="navigate-btn__mode-primary"
-                    onClick={handleClickOrbit}
-                  >
-                    {!isOrbited ? "Orbit" : "Dock"}
-                  </button>
                   <div className="navigate-flight-mode">
                     <ul className="navigate-mode-list">
                       <li className="navigate-mode-list-item">
@@ -352,7 +299,6 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                         waypointShip={ship.nav.waypointSymbol}
                         flightMode={flightMode}
                         isOrbited={isOrbited}
-                        fuel={fuelCurrent}
                         fuelCapacity={ship.fuel.capacity}
                       />
                     ))}
