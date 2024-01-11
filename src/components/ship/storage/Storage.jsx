@@ -51,7 +51,6 @@ const Storage = ({ data }) => {
 
   const handleMatchMarket = () => {
     if (cargo?.inventory && market?.tradeGoods) {
-      console.log("if cargo and market exist");
       const matchingItems = market.tradeGoods.filter((marketItem) =>
         cargo.inventory.some(
           (cargoItem) => cargoItem.symbol === marketItem.symbol
@@ -79,24 +78,17 @@ const Storage = ({ data }) => {
         symbol.systemSymbol,
         symbol.waypointSymbol
       );
-      console.log(currentWaypoint);
       currentWaypoint.traits.map((trait) => {
-        console.log(trait.symbol === "MARKETPLACE");
         if (trait.symbol === "MARKETPLACE") {
-          console.log("Marketplace found");
           getMarket(symbol.systemSymbol, symbol.waypointSymbol);
+          handleMatchMarket();
         } else {
-          console.log("Marketplace not found");
           setMatchingItems([]);
         }
       });
     };
     getCurrentWaypoint();
   }, [symbol.waypointSymbol]);
-
-  useEffect(() => {
-    handleMatchMarket();
-  }, [cargo, market]);
 
   return (
     <div className="ship-storage">
@@ -133,13 +125,17 @@ const Storage = ({ data }) => {
                         (matchingItem) => matchingItem.symbol === item.symbol
                       ) && (
                         <>
-                          <button onClick={() => handleSellItem(item)}>
+                          <button
+                            onClick={() => handleSellItem(item)}
+                            className="sell-btn"
+                          >
                             Sell
                           </button>
                           {isClicked[item.symbol] && (
                             <input
                               type="number"
                               name="quantity"
+                              className="quantity-input"
                               min={1}
                               onChange={(event) =>
                                 handleChangeQuantity(event, item)
