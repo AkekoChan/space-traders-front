@@ -12,7 +12,6 @@ const Extract = ({ shipSymbol, userToken }) => {
   const [endTime, setEndTime] = useState(shipData?.cooldown?.expiration);
   const [isExtracting, setIsExtracting] = useState(false);
 
-  // Utilisez useRef pour stocker la valeur initiale du cooldown
   const initialCooldownRef = useRef(shipData?.cooldown?.remainingSeconds);
 
   useEffect(() => {
@@ -36,7 +35,6 @@ const Extract = ({ shipSymbol, userToken }) => {
   const handleCooldownEnd = async () => {
     setIsExtracting(false);
 
-    // Réinitialisez le cooldown à sa valeur initiale
     setCooldown(initialCooldownRef.current);
   };
 
@@ -56,7 +54,6 @@ const Extract = ({ shipSymbol, userToken }) => {
       setCooldown(data?.remainingSeconds);
       setEndTime(data?.expiration);
 
-      // Mettez à jour la valeur initiale du cooldown lorsque le cooldown commence
       if (data?.remainingSeconds !== undefined && !isExtracting) {
         initialCooldownRef.current = data.remainingSeconds;
       }

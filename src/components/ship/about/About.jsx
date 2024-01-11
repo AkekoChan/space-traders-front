@@ -33,7 +33,9 @@ const About = ({ data }) => {
   useEffect(() => {
     if (shipData) {
       setStatus(shipData?.nav?.status || data.nav.status || shipData?.status);
-      setFlightMode(shipData?.flightMode || data.nav.flightMode);
+      setFlightMode(
+        shipData?.flightMode || data.nav.flightMode || shipData?.nav?.flightMode
+      );
       setArrivalDate({
         time: shipData?.nav?.route?.arrival || data.nav.route.arrival,
         waypoint:

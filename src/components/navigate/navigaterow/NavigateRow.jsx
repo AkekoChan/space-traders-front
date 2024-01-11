@@ -64,6 +64,7 @@ const NavigateRow = ({
 
   const handleClickNavigate = async () => {
     const res = await shipNavigate(waypoint.symbol, symbolShip);
+    console.log(res);
     updateFuel(res.fuel);
     setIsLocating(res?.nav?.route?.destination?.symbol);
   };

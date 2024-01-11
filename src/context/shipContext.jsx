@@ -9,6 +9,7 @@ export const ShipContextProvider = ({ children }) => {
   const [shipData, setShipData] = useState({});
   const [cargo, setCargo] = useState();
   const [fuel, setFuel] = useState();
+  const [market, setMarket] = useState([]);
 
   const updateShipData = async (options) => {
     try {
@@ -147,6 +148,22 @@ export const ShipContextProvider = ({ children }) => {
     localStorage.setItem("waypoints", JSON.stringify(waypoints));
   };
 
+  const getWaypoint = async (systemSymbol, waypointSymbol) => {
+    const options = {
+      endpoint: `systems/${systemSymbol}/waypoints/${waypointSymbol}`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+    try {
+      const data = await fetchData(options);
+      return data;
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const shipNavigate = async (waypoint, shipSymbol) => {
     const options = {
       endpoint: `my/ships/${shipSymbol}/navigate`,
@@ -206,7 +223,13 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
 
-    return updateShipData(options);
+    try {
+      const data = await fetchData(options);
+      setMarket(data);
+    } catch (error) {
+      setMarket([]);
+      console.error(error);
+    }
   };
 
   const sellCargo = async (item, shipSymbol, units) => {
@@ -241,6 +264,8 @@ export const ShipContextProvider = ({ children }) => {
     updateFuel,
     fuel,
     getFuel,
+    market,
+    getWaypoint,
   };
 
   return (

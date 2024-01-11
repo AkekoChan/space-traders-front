@@ -102,10 +102,10 @@ const Dialog = ({ isOpen, onClose, ship }) => {
 
   useEffect(() => {
     if (shipData) {
-      setStatus(shipData.nav?.status || ship.nav.status);
+      setStatus(shipData?.nav?.status || ship.nav.status);
       setFlightMode(shipData?.flightMode || ship.nav.flightMode);
       setChangeWaypoint(
-        shipData.nav?.waypointSymbol || ship.nav.waypointSymbol
+        shipData?.nav?.waypointSymbol || ship.nav.waypointSymbol
       );
       setIsOrbited(
         shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"

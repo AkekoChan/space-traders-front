@@ -7,37 +7,25 @@ import {
 import { useShipContext } from "../../../context/shipContext";
 
 const Storage = ({ data }) => {
-  const { shipData, getMarket, sellCargo, getCargo, cargo, updateStorage } =
-    useShipContext();
+  const {
+    shipData,
+    getMarket,
+    sellCargo,
+    getCargo,
+    updateStorage,
+    market,
+    cargo,
+    getWaypoint,
+  } = useShipContext();
 
   const [symbol, setSymbol] = useState({
     systemSymbol: shipData?.nav?.systemSymbol || data.nav.systemSymbol,
     waypointSymbol:
       shipData?.nav?.route.destination.symbol || data.nav.waypointSymbol,
   });
-  const [market, setMarket] = useState([]);
   const [isClicked, setIsClicked] = useState({});
   const [quantity, setQuantity] = useState({});
-
-  const handleGetMarket = async () => {
-    try {
-      const marketData = await getMarket(
-        symbol.systemSymbol,
-        symbol.waypointSymbol
-      );
-      return (
-        marketData?.tradeGoods?.map((item) => ({
-          symbolMarket: formatFirstLetterToUpperCase(
-            replaceUnderscoreWithSpace(item.symbol)
-          ),
-          sellPrice: item.sellPrice,
-        })) || []
-      );
-    } catch (error) {
-      console.error("Error fetching market data:", error);
-      return [];
-    }
-  };
+  const [matchingItems, setMatchingItems] = useState([]);
 
   const handleSellItem = async (item) => {
     setIsClicked({ ...isClicked, [item.symbol]: !isClicked[item.symbol] });
@@ -61,6 +49,18 @@ const Storage = ({ data }) => {
     setQuantity({ ...quantity, [item.symbol]: event.target.value });
   };
 
+  const handleMatchMarket = () => {
+    if (cargo?.inventory && market?.tradeGoods) {
+      console.log("if cargo and market exist");
+      const matchingItems = market.tradeGoods.filter((marketItem) =>
+        cargo.inventory.some(
+          (cargoItem) => cargoItem.symbol === marketItem.symbol
+        )
+      );
+      setMatchingItems(matchingItems);
+    }
+  };
+
   useEffect(() => {
     setSymbol({
       systemSymbol: shipData?.nav?.systemSymbol || data.nav.systemSymbol,
@@ -74,25 +74,29 @@ const Storage = ({ data }) => {
   }, [data.symbol]);
 
   useEffect(() => {
-    const fetchMarket = async () => {
-      if (!cargo) return;
-
-      const marketData = await handleGetMarket();
-      const matchingItems = marketData.filter((item) =>
-        cargo.inventory.some(
-          (cargoItem) =>
-            item.symbolMarket ===
-            replaceUnderscoreWithSpace(
-              formatFirstLetterToUpperCase(cargoItem.symbol)
-            )
-        )
+    const getCurrentWaypoint = async () => {
+      const currentWaypoint = await getWaypoint(
+        symbol.systemSymbol,
+        symbol.waypointSymbol
       );
-
-      setMarket(matchingItems);
+      console.log(currentWaypoint);
+      currentWaypoint.traits.map((trait) => {
+        console.log(trait.symbol === "MARKETPLACE");
+        if (trait.symbol === "MARKETPLACE") {
+          console.log("Marketplace found");
+          getMarket(symbol.systemSymbol, symbol.waypointSymbol);
+        } else {
+          console.log("Marketplace not found");
+          setMatchingItems([]);
+        }
+      });
     };
+    getCurrentWaypoint();
+  }, [symbol.waypointSymbol]);
 
-    fetchMarket();
-  }, [cargo, symbol.waypointSymbol]);
+  useEffect(() => {
+    handleMatchMarket();
+  }, [cargo, market]);
 
   return (
     <div className="ship-storage">
@@ -118,23 +122,15 @@ const Storage = ({ data }) => {
                 </td>
                 <td>{item.units}</td>
                 <td>
-                  {Array.isArray(market) && (
+                  {Array.isArray(matchingItems) && (
                     <>
                       <span>
-                        {market.find(
-                          (marketItem) =>
-                            marketItem.symbolMarket ===
-                            replaceUnderscoreWithSpace(
-                              formatFirstLetterToUpperCase(item.symbol)
-                            )
+                        {matchingItems.find(
+                          (matchingItem) => matchingItem.symbol === item.symbol
                         )?.sellPrice || "-"}
                       </span>
-                      {market.find(
-                        (marketItem) =>
-                          marketItem.symbolMarket ===
-                          replaceUnderscoreWithSpace(
-                            formatFirstLetterToUpperCase(item.symbol)
-                          )
+                      {matchingItems.find(
+                        (matchingItem) => matchingItem.symbol === item.symbol
                       ) && (
                         <>
                           <button onClick={() => handleSellItem(item)}>
