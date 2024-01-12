@@ -76,3 +76,12 @@
 .market-table tr:last-child td:last-child {
   border-bottom-right-radius: 1rem;
 }
+
+input[type="number"] {
+  background: none;
+  border: 2px solid var(--gray);
+  border-radius: 0.75rem;
+  padding: 0.5rem;
+  color: var(--white);
+  margin-left: 0.5rem;
+}
