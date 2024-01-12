@@ -1,6 +1,7 @@
 .cooldown {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.5rem;
 }
 
@@ -21,4 +22,9 @@
 
 .cooldown-label {
   color: var(--gray);
+}
+
+.extract-label {
+  color: var(--white);
+  font-size: var(--font-24px-1_5rem);
 }

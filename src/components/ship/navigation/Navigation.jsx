@@ -28,20 +28,12 @@ const Navigation = ({ data }) => {
   };
 
   const handleClickOrbit = async () => {
-    try {
-      if (isOrbited) {
-        await dockShip(data.symbol);
-        console.log("Docked");
-        setIsOrbited(false);
-        console.log(isOrbited);
-      } else {
-        console.log("Orbiting");
-        await orbitShip(data.symbol);
-        setIsOrbited(true);
-        console.log(isOrbited);
-      }
-    } catch (error) {
-      console.error("Error in orbit/dock operation", error);
+    if (isOrbited) {
+      await dockShip(data.symbol);
+      setIsOrbited(false);
+    } else {
+      await orbitShip(data.symbol);
+      setIsOrbited(true);
     }
   };
 

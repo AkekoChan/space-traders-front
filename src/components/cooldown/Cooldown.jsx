@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import stopWatchIcon from "../../assets/icons/stopwatch.svg";
 import "./cooldown.css";
 
-const Cooldown = ({ startTime, endTime, onCooldownEnd }) => {
+const Cooldown = ({ startTime, endTime, onCooldownEnd, isExtractCooldown }) => {
   const calculateTimeLeft = () => {
     const currentTime = new Date().getTime();
     const timeRemaining = Math.max(
@@ -49,13 +50,26 @@ const Cooldown = ({ startTime, endTime, onCooldownEnd }) => {
 
   return (
     <div className="cooldown">
-      <div className="cooldown-bar-container">
-        <div
-          className="cooldown-bar"
-          style={{ width: `${elapsedPercentage}%` }}
-        ></div>
-      </div>
-      <span className="cooldown-label">{remainingTimeLabel}s</span>
+      {isExtractCooldown === false ? (
+        <div className="cooldown-bar-container">
+          <div
+            className="cooldown-bar"
+            style={{ width: `${elapsedPercentage}%` }}
+          ></div>
+        </div>
+      ) : (
+        <img
+          style={{ width: "3rem", height: "3rem" }}
+          src={stopWatchIcon}
+          alt="Stopwatch"
+          className="cooldown-icon"
+        />
+      )}
+      <span
+        className={`cooldown-label ${isExtractCooldown ? "extract-label" : ""}`}
+      >
+        {remainingTimeLabel}s
+      </span>
     </div>
   );
 };

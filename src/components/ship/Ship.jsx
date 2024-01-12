@@ -13,6 +13,8 @@ import Navigation from "./navigation/Navigation.jsx";
 import State from "./state/State.jsx";
 import Extract from "./extract/Extract.jsx";
 import Storage from "./storage/Storage.jsx";
+import Shipyard from "./shipyard/Shipyard.jsx";
+import Market from "./market/Market.jsx";
 
 import "./ship.css";
 
@@ -55,7 +57,10 @@ const Ship = () => {
           <h1 className="ship-title">Ship</h1>
           <div className="ship-refresh">
             Refresh
-            <button className="ship-refresh__button" onClick={refetch}>
+            <button
+              className="ship-refresh__button"
+              onClick={() => setTimeout(refetch, 1000)}
+            >
               <RedoOutlined style={{ fontSize: "1.5rem", color: "#fff" }} />
             </button>
           </div>
@@ -90,11 +95,31 @@ const Ship = () => {
                 >
                   Extract
                 </button>
+                <button
+                  className={`ship-ressources__button ${
+                    activeButton === "market" ? "active" : ""
+                  }`}
+                  onClick={() => handleClickButton("market")}
+                >
+                  Market
+                </button>
+                <button
+                  className={`ship-ressources__button ${
+                    activeButton === "shipyard" ? "active" : ""
+                  }`}
+                  onClick={() => handleClickButton("shipyard")}
+                >
+                  Shipyard
+                </button>
               </div>
               {activeButton === "cargo" ? (
                 <Storage data={data} />
-              ) : (
+              ) : activeButton === "resources" ? (
                 memoizedExtractComponent
+              ) : activeButton === "market" ? (
+                <Market data={data} />
+              ) : (
+                <Shipyard />
               )}
             </div>
           </div>

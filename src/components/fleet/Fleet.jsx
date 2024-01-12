@@ -37,7 +37,10 @@ const Fleet = () => {
         <h1 className="fleet-title">Fleet</h1>
         <div className="fleet-refresh">
           Refresh
-          <button className="fleet-refresh__button" onClick={refetch}>
+          <button
+            className="fleet-refresh__button"
+            onClick={() => setTimeout(refetch, 1000)}
+          >
             <RedoOutlined style={{ fontSize: "1.5rem", color: "#fff" }} />
           </button>
         </div>

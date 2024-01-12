@@ -1,0 +1,78 @@
+.buy-button,
+.sell-button {
+  background: linear-gradient(94deg, var(--cream) -1.06%, var(--lavender) 100%);
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--black);
+  font-weight: var(--font-weight-semibold);
+  padding: 0.5rem 1rem;
+  border-radius: 0.75rem;
+}
+
+.buy-button:disabled,
+.sell-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.buy-price,
+.sell-price {
+  margin-right: 0.5rem;
+}
+
+.market {
+  width: 100%;
+}
+
+.market-table {
+  width: 100%;
+  text-align: left;
+  --border: 2px solid var(--gray);
+  border-collapse: separate;
+  border-spacing: 0 0.625rem;
+  color: var(--white);
+}
+
+.market-table th {
+  background: rgba(255, 255, 255, 0.17);
+  color: var(--white);
+  font-weight: var(--font-weight-semibold);
+}
+
+.market-table td,
+.market-table th {
+  border-top: var(--border);
+  border-bottom: var(--border);
+  vertical-align: middle;
+  padding: 1rem;
+  &:first-child {
+    border-left: var(--border);
+  }
+  &:last-child {
+    border-right: var(--border);
+  }
+}
+
+.market-table th:first-child {
+  border-top-left-radius: 1rem;
+}
+
+.market-table th:last-child {
+  border-top-right-radius: 1rem;
+}
+
+.market-table th:nth-child(2),
+.market-table th:last-child,
+.market-table td:nth-child(2),
+.market-table td:last-child {
+  text-align: right;
+}
+
+.market-table tr:last-child td:first-child {
+  border-bottom-left-radius: 1rem;
+}
+
+.market-table tr:last-child td:last-child {
+  border-bottom-right-radius: 1rem;
+}

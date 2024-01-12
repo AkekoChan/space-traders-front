@@ -16,18 +16,7 @@ import logo from "../../assets/img/logo.svg";
 import "./header.css";
 
 const Header = () => {
-  const { logout, userToken } = useAuthContext();
-
-  const options = {
-    endpoint: "my/agent",
-    method: "GET",
-    headers: {
-      Accept: "application/json",
-      Authorization: `Bearer ${userToken}`,
-    },
-  };
-
-  const { data } = useFetch(options);
+  const { logout, userToken, agent, getAgent } = useAuthContext();
 
   const [isSubHeaderOpen, setIsSubHeaderOpen] = useState(false);
   const buttonRef = useRef(null);
@@ -36,6 +25,12 @@ const Header = () => {
   const handleProfileClick = () => {
     setIsSubHeaderOpen(!isSubHeaderOpen);
   };
+
+  useEffect(() => {
+    if (userToken) {
+      getAgent();
+    }
+  }, [userToken]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -67,7 +62,7 @@ const Header = () => {
           </li>
           <li className="header__item header__item--credits">
             <HeatMapOutlined style={{ fontSize: "1.5rem", color: "#f1ffc4" }} />
-            <span className="header__credits">{data?.credits}</span>
+            <span className="header__credits">{agent?.credits}</span>
           </li>
           <li className="header__item  header__item--right">
             <ul className="header__list">
@@ -82,7 +77,7 @@ const Header = () => {
                   <UserOutlined style={{ fontSize: "1.5rem", color: "#fff" }} />
                 </button>
                 {isSubHeaderOpen && (
-                  <SubHeader data={data} token={userToken} ref={popupRef} />
+                  <SubHeader agent={agent} token={userToken} ref={popupRef} />
                 )}
               </li>
               <li className="header__item">

@@ -49,6 +49,21 @@ export const ShipContextProvider = ({ children }) => {
     return updateShipData(options);
   };
 
+  const shipNavigate = async (waypoint, shipSymbol) => {
+    const options = {
+      endpoint: `my/ships/${shipSymbol}/navigate`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: `{"waypointSymbol": "${waypoint}"}`,
+    };
+
+    return updateShipData(options);
+  };
+
   const updateNavigationMode = async (shipSymbol, mode) => {
     const options = {
       endpoint: `my/ships/${shipSymbol}/nav`,
@@ -92,14 +107,29 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
     try {
-      const data = await fetchData(options);
-      setFuel(data.fuel);
+      const response = await fetchData(options);
+      setFuel(response.fuel);
     } catch (error) {
       console.error(error);
     }
   };
 
-  const fetchSystemWaypoints = async (systemSymbol) => {};
+  const listWaypoints = async (systemSymbol, params) => {
+    const options = {
+      endpoint: `systems/${systemSymbol}/waypoints?limit=${params.limit}&page=${params.page}`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+    try {
+      const response = await fetchData(options, true);
+      return response;
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const getWaypoint = async (systemSymbol, waypointSymbol) => {
     const options = {
@@ -111,25 +141,11 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
     try {
-      const data = await fetchData(options);
-      return data;
+      const response = await fetchData(options);
+      return response;
     } catch (error) {
       console.error(error);
     }
-  };
-  const shipNavigate = async (waypoint, shipSymbol) => {
-    const options = {
-      endpoint: `my/ships/${shipSymbol}/navigate`,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${userToken}`,
-      },
-      body: `{"waypointSymbol": "${waypoint}"}`,
-    };
-
-    return updateShipData(options);
   };
 
   const extractRessources = async (shipSymbol) => {
@@ -159,28 +175,9 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
     try {
-      const data = await fetchData(options);
-      setCargo(data);
+      const response = await fetchData(options);
+      setCargo(response);
     } catch (error) {
-      console.error(error);
-    }
-  };
-
-  const getMarket = async (systemSymbol, waypointSymbol) => {
-    const options = {
-      endpoint: `systems/${systemSymbol}/waypoints/${waypointSymbol}/market`,
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        Authorization: `Bearer ${userToken}`,
-      },
-    };
-
-    try {
-      const data = await fetchData(options);
-      setMarket(data);
-    } catch (error) {
-      setMarket([]);
       console.error(error);
     }
   };
@@ -200,13 +197,48 @@ export const ShipContextProvider = ({ children }) => {
     return updateShipData(options);
   };
 
+  const buyCargo = async (item, shipSymbol, units) => {
+    const options = {
+      endpoint: `my/ships/${shipSymbol}/purchase`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: `{"symbol":"${item}","units":"${units}"}`,
+    };
+
+    return updateShipData(options);
+  };
+
+  const getMarket = async (systemSymbol, waypointSymbol) => {
+    const options = {
+      endpoint: `systems/${systemSymbol}/waypoints/${waypointSymbol}/market`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+
+    try {
+      const response = await fetchData(options);
+      setMarket(response);
+      return response;
+    } catch (error) {
+      setMarket([]);
+      console.error(error);
+    }
+  };
+
   const contextValue = {
     dockShip,
     orbitShip,
     updateNavigationMode,
     shipData,
     refuelShip,
-    fetchSystemWaypoints,
+    listWaypoints,
     shipNavigate,
     extractRessources,
     updateStorage,
@@ -219,6 +251,7 @@ export const ShipContextProvider = ({ children }) => {
     getFuel,
     market,
     getWaypoint,
+    buyCargo,
   };
 
   return (

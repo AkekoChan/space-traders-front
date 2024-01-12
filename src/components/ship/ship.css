@@ -102,13 +102,13 @@
 }
 
 .ship-ressources__buttons {
-  width: 360px;
+  width: 560px;
   border: 2px solid var(--gray);
   border-radius: 0.75rem;
 }
 
 .ship-ressources__button {
-  width: 50%;
+  width: 25%;
   background: var(--black);
   border: none;
   padding: 1rem;

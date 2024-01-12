@@ -1,10 +1,13 @@
 import { useState, createContext, useContext } from "react";
 import { useNavigate } from "react-router";
 
+import { fetchData } from "../utils";
+
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
   const [userToken, setUserToken] = useState(localStorage.getItem("token"));
+  const [agent, setAgent] = useState();
   const navigate = useNavigate();
 
   const login = async (token) => {
@@ -48,8 +51,27 @@ export const AuthContextProvider = ({ children }) => {
     navigate("/login");
   };
 
+  const getAgent = async () => {
+    const options = {
+      endpoint: `my/agent`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+    try {
+      const response = await fetchData(options);
+      setAgent(response);
+      return response;
+    } catch (error) {
+      setAgent(null);
+      console.error(error);
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ userToken, login, logout }}>
+    <AuthContext.Provider value={{ userToken, login, logout, getAgent, agent }}>
       {children}
     </AuthContext.Provider>
   );

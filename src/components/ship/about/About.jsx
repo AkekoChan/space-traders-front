@@ -119,8 +119,8 @@ const About = ({ data }) => {
         <Cooldown
           startTime={new Date(departureDate.time)}
           endTime={arrivalDate.time}
-          shipSymbol={data.symbol}
           onCooldownEnd={handleCooldownEnd}
+          isExtractCooldown={false}
         />
       </div>
     </div>

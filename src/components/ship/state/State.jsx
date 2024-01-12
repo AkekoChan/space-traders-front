@@ -9,9 +9,9 @@ import wrenchIcon from "../../../assets/icons/wrench.svg";
 const State = ({ data }) => {
   const { shipData, refuelShip, updateFuel, fuel, getFuel } = useShipContext();
 
-  const [isFull, setIsFull] = useState(fuel === data.fuel.capacity);
-  const [isDocked, setIsDocked] = useState(data.nav.status);
-  const [cargoUnits, setCargoUnits] = useState(data.cargo.units);
+  const [isFull, setIsFull] = useState();
+  const [isDocked, setIsDocked] = useState();
+  const [cargoUnits, setCargoUnits] = useState();
 
   useEffect(() => {
     if (shipData && shipData.nav) {
@@ -23,7 +23,7 @@ const State = ({ data }) => {
     if (shipData && shipData.cargo) {
       setCargoUnits(shipData.cargo.units);
     }
-  }, [shipData, fuel]);
+  }, [shipData?.nav, fuel]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -38,8 +38,13 @@ const State = ({ data }) => {
       }
     };
 
+    setIsDocked(data.nav.status);
+    setCargoUnits(data.cargo.units);
+    setIsFull(data.fuel.current === data.fuel.capacity);
     fetchData();
   }, [data.symbol]);
+
+  console.log(isFull);
 
   const handleClickRefuel = async () => {
     if (isFull || isDocked === "IN_ORBIT" || isDocked === "IN_TRANSIT") {

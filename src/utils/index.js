@@ -47,7 +47,7 @@ export function travelTime(dist, multiplier, engineSpeed) {
   );
 }
 
-export function fetchData(options) {
+export function fetchData(options, withMeta) {
   return new Promise(async (resolve, reject) => {
     try {
       const response = await fetch(
@@ -58,7 +58,6 @@ export function fetchData(options) {
           body: options.body || null,
         }
       );
-
       if (!response.ok) {
         const errorData = await response.json();
         console.error("Error Response:", errorData);
@@ -71,6 +70,11 @@ export function fetchData(options) {
         return;
       }
 
+      if (withMeta) {
+        const responseData = await response.json();
+        resolve({ data: responseData.data, meta: responseData.meta });
+        return;
+      }
       const responseData = await response.json();
       resolve(responseData.data);
     } catch (error) {

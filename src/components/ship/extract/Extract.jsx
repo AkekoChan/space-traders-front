@@ -80,6 +80,7 @@ const Extract = ({ shipSymbol, userToken }) => {
           startTime={cooldown}
           endTime={endTime}
           onCooldownEnd={handleCooldownEnd}
+          isExtractCooldown={true}
         />
       </div>
     </div>

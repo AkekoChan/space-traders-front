@@ -8,23 +8,18 @@ import {
   travelTime,
 } from "../../../utils";
 
-const NavigateRow = ({
-  waypoint,
-  coordinatesShip,
-  speedShip,
-  flightMode,
-  isOrbited,
-  symbolShip,
-  waypointShip,
-}) => {
+const NavigateRow = ({ waypoint, shipProps, flightMode, isOrbited }) => {
+  console.log(shipProps);
   const { shipData, shipNavigate, fuel, updateFuel } = useShipContext();
 
   const [flightModeShip, setFlightModeShip] = useState(
     shipData?.flightMode || flightMode
   );
 
+  console.log(shipProps.waypoint);
+
   const [isLocating, setIsLocating] = useState(
-    shipData?.nav?.route?.destination?.symbol || waypointShip
+    shipData?.nav?.route?.destination?.symbol || shipProps.waypoint
   );
 
   const multiplier = {
@@ -37,14 +32,14 @@ const NavigateRow = ({
   const distanceToWaypoint = distance(
     waypoint.x,
     waypoint.y,
-    coordinatesShip.x,
-    coordinatesShip.y
+    shipProps.x,
+    shipProps.y
   );
 
   const timeToWaypoint = travelTime(
     distanceToWaypoint,
     multiplier[flightModeShip],
-    speedShip
+    shipProps.speed
   );
 
   const getFuelConsumption = (distance, flightMode) => {
@@ -63,10 +58,9 @@ const NavigateRow = ({
   };
 
   const handleClickNavigate = async () => {
-    const res = await shipNavigate(waypoint.symbol, symbolShip);
-    console.log(res);
-    updateFuel(res.fuel);
-    setIsLocating(res?.nav?.route?.destination?.symbol);
+    const response = await shipNavigate(waypoint.symbol, shipProps.symbol);
+    updateFuel(response.fuel);
+    setIsLocating(response.nav.route.destination.symbol);
   };
 
   useEffect(() => {

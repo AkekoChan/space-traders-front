@@ -12,11 +12,7 @@ import {
 import { formatFirstLetterToUpperCase, distance } from "../../utils";
 import { useShipContext } from "../../context/shipContext";
 import NavigateRow from "./navigaterow/NavigateRow.jsx";
-import {
-  CloseOutlined,
-  SortAscendingOutlined,
-  SortDescendingOutlined,
-} from "@ant-design/icons";
+import { CloseOutlined } from "@ant-design/icons";
 
 import fuelIcon from "../../assets/icons/fuel.svg";
 import cargoIcon from "../../assets/icons/cargo.svg";
@@ -29,10 +25,9 @@ import eyeSlashIcon from "../../assets/icons/eye-slash.svg";
 import "./navigate.css";
 
 const Dialog = ({ isOpen, onClose, ship }) => {
-  const { shipData, updateNavigationMode, fetchSystemWaypoints, fuel } =
+  const { shipData, updateNavigationMode, listWaypoints, fuel } =
     useShipContext();
 
-  const [coordinatesShip, setCoordinatesShip] = useState({});
   const [status, setStatus] = useState(
     shipData?.nav?.status || ship.nav.status
   );
@@ -45,38 +40,33 @@ const Dialog = ({ isOpen, onClose, ship }) => {
   const [isOrbited, setIsOrbited] = useState(
     shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"
   );
-  const [sortOrder, setSortOrder] = useState("asc");
-  const [waypoints, setWaypoints] = useState(
-    JSON.parse(localStorage.getItem("waypoints")) || []
-  );
 
-  const sortWaypoints = (waypoints, order) => {
-    if (!waypoints) {
-      return [];
+  const [waypoints, setWaypoints] = useState([]);
+  const [shipProps, setShipProps] = useState({});
+
+  const fetchAllSystem = async () => {
+    const response = await listWaypoints(ship.nav.systemSymbol, {
+      limit: 20,
+      page: "",
+    });
+    const pages = Math.ceil(response.meta.total / response.meta.limit);
+    console.log(pages);
+
+    let fetchedWaypoints = response.data;
+
+    for (let i = 2; i <= pages; i++) {
+      const waypoints = await listWaypoints(ship.nav.systemSymbol, {
+        limit: 20,
+        page: i,
+      });
+      fetchedWaypoints = [...fetchedWaypoints, ...waypoints.data];
     }
 
-    return waypoints.slice().sort((a, b) => {
-      const distanceA = distance(
-        a.x,
-        a.y,
-        coordinatesShip.x,
-        coordinatesShip.y
-      );
-      const distanceB = distance(
-        b.x,
-        b.y,
-        coordinatesShip.x,
-        coordinatesShip.y
-      );
-
-      return order === "asc" ? distanceA - distanceB : distanceB - distanceA;
-    });
-  };
-
-  const sortedWaypoints = sortWaypoints(waypoints, sortOrder);
-
-  const handleSortByDistance = () => {
-    setSortOrder((prevOrder) => (prevOrder === "asc" ? "desc" : "asc"));
+    localStorage.setItem(
+      ship.nav.systemSymbol,
+      JSON.stringify(fetchedWaypoints)
+    );
+    setWaypoints(fetchedWaypoints);
   };
 
   const handleClickMode = async (mode) => {
@@ -101,6 +91,22 @@ const Dialog = ({ isOpen, onClose, ship }) => {
   const { getFloatingProps } = useInteractions([click, dismiss, role]);
 
   useEffect(() => {
+    const localSystem = localStorage.getItem(ship.nav.systemSymbol);
+
+    localSystem ? setWaypoints(JSON.parse(localSystem)) : fetchAllSystem();
+
+    setShipProps({
+      ...shipProps,
+      symbol: ship.symbol,
+      x: ship.nav.route.destination.x,
+      y: ship.nav.route.destination.y,
+      fuel: ship.fuel,
+      speed: ship.engine.speed,
+      waypoint: ship.nav.waypointSymbol,
+    });
+  }, []);
+
+  useEffect(() => {
     if (shipData) {
       setStatus(shipData?.nav?.status || ship.nav.status);
       setFlightMode(shipData?.flightMode || ship.nav.flightMode);
@@ -111,18 +117,6 @@ const Dialog = ({ isOpen, onClose, ship }) => {
         shipData?.nav?.status === "IN_ORBIT" || ship.nav.status === "IN_ORBIT"
       );
     }
-
-    if (waypoints.length === 0) {
-      const fetchWaypoints = async () => {
-        await fetchSystemWaypoints(ship.nav.systemSymbol);
-      };
-      fetchWaypoints();
-    }
-
-    setCoordinatesShip({
-      x: ship.nav.route.destination.x,
-      y: ship.nav.route.destination.y,
-    });
   }, [shipData]);
   return (
     <>
@@ -266,40 +260,20 @@ const Dialog = ({ isOpen, onClose, ship }) => {
                   <thead>
                     <tr>
                       <th style={{ width: "25%" }}>Waypoint</th>
-                      <th style={{ width: "20%" }}>
-                        Distance (Time)
-                        <button
-                          onClick={handleSortByDistance}
-                          className="navigate-table__sort-button"
-                        >
-                          {sortOrder === "asc" ? (
-                            <SortAscendingOutlined
-                              style={{ color: "#fff", fontSize: "1.5rem" }}
-                            />
-                          ) : (
-                            <SortDescendingOutlined
-                              style={{ color: "#fff", fontSize: "1.5rem" }}
-                            />
-                          )}
-                        </button>
-                      </th>
+                      <th style={{ width: "20%" }}>Distance (Time)</th>
                       <th style={{ width: "15%" }}>Type</th>
                       <th style={{ width: "30%" }}>Traits</th>
                       <th style={{ width: "10%" }}></th>
                     </tr>
                   </thead>
                   <tbody>
-                    {sortedWaypoints.map((waypoint) => (
+                    {waypoints.map((waypoint) => (
                       <NavigateRow
                         key={waypoint.symbol}
+                        shipProps={shipProps}
                         waypoint={waypoint}
-                        coordinatesShip={coordinatesShip}
-                        speedShip={ship.engine.speed}
-                        symbolShip={ship.symbol}
-                        waypointShip={ship.nav.waypointSymbol}
                         flightMode={flightMode}
                         isOrbited={isOrbited}
-                        fuelCapacity={ship.fuel.capacity}
                       />
                     ))}
                   </tbody>
