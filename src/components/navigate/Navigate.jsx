@@ -9,7 +9,7 @@ import {
   FloatingOverlay,
 } from "@floating-ui/react";
 
-import { formatFirstLetterToUpperCase, distance } from "../../utils";
+import { formatFirstLetterToUpperCase } from "../../utils";
 import { useShipContext } from "../../context/shipContext";
 import NavigateRow from "./navigaterow/NavigateRow.jsx";
 import { CloseOutlined } from "@ant-design/icons";
