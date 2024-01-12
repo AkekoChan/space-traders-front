@@ -48,9 +48,9 @@ export function travelTime(dist, multiplier, engineSpeed) {
 }
 
 export function fetchData(options, withMeta) {
-  return new Promise(async (resolve, reject) => {
+  return new Promise((resolve, reject) => {
     try {
-      const response = await fetch(
+      const response = fetch(
         `https://api.spacetraders.io/v2/${options.endpoint}`,
         {
           method: options.method || "GET",
@@ -59,7 +59,7 @@ export function fetchData(options, withMeta) {
         }
       );
       if (!response.ok) {
-        const errorData = await response.json();
+        const errorData = response.json();
         console.error("Error Response:", errorData);
         reject(new Error(`Request failed with status: ${response.status}`));
         return;
@@ -71,11 +71,11 @@ export function fetchData(options, withMeta) {
       }
 
       if (withMeta) {
-        const responseData = await response.json();
+        const responseData = response.json();
         resolve({ data: responseData.data, meta: responseData.meta });
         return;
       }
-      const responseData = await response.json();
+      const responseData = response.json();
       resolve(responseData.data);
     } catch (error) {
       console.error("Fetch Error:", error);
