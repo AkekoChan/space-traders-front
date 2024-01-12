@@ -30,7 +30,7 @@ const State = ({ data }) => {
     if (shipData?.cargo) {
       setCargoUnits(shipData.cargo.units);
     }
-  }, [shipData?.nav, fuel]);
+  }, [shipData, fuel]);
 
   useEffect(() => {
     const fetchData = async () => {
