@@ -70,8 +70,14 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
+  const updateAgent = async () => {
+    await getAgent();
+  };
+
   return (
-    <AuthContext.Provider value={{ userToken, login, logout, getAgent, agent }}>
+    <AuthContext.Provider
+      value={{ userToken, login, logout, getAgent, agent, updateAgent }}
+    >
       {children}
     </AuthContext.Provider>
   );

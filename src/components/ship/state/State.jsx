@@ -7,20 +7,27 @@ import cargoIcon from "../../../assets/icons/cargo.svg";
 import wrenchIcon from "../../../assets/icons/wrench.svg";
 
 const State = ({ data }) => {
-  const { shipData, refuelShip, updateFuel, fuel, getFuel } = useShipContext();
+  const {
+    shipData,
+    refuelShip,
+    updateFuel,
+    fuel,
+    getFuel,
+    statusNavigation,
+    updateStatusNavigation,
+  } = useShipContext();
 
   const [isFull, setIsFull] = useState();
-  const [isDocked, setIsDocked] = useState();
   const [cargoUnits, setCargoUnits] = useState();
 
   useEffect(() => {
-    if (shipData && shipData.nav) {
-      setIsDocked(shipData.nav.status);
+    if (shipData?.nav) {
+      updateStatusNavigation(shipData.nav.status);
     }
     if (fuel === data.fuel.capacity) {
       setIsFull(true);
     }
-    if (shipData && shipData.cargo) {
+    if (shipData?.cargo) {
       setCargoUnits(shipData.cargo.units);
     }
   }, [shipData?.nav, fuel]);
@@ -38,14 +45,18 @@ const State = ({ data }) => {
       }
     };
 
-    setIsDocked(data.nav.status);
+    updateStatusNavigation(data.nav.status);
     setCargoUnits(data.cargo.units);
     setIsFull(data.fuel.current === data.fuel.capacity);
     fetchData();
   }, [data.symbol]);
 
   const handleClickRefuel = async () => {
-    if (isFull || isDocked === "IN_ORBIT" || isDocked === "IN_TRANSIT") {
+    if (
+      isFull ||
+      statusNavigation === "IN_ORBIT" ||
+      statusNavigation === "IN_TRANSIT"
+    ) {
       return;
     }
     try {
@@ -66,15 +77,16 @@ const State = ({ data }) => {
           <div className="ship-state__item-value-container">
             <img src={fuelIcon} alt="Fuel Icon" />
             <span className="ship-state__item-value">
-              {fuel?.current !== undefined ? fuel.current : "N/A"} /{" "}
-              {data.fuel.capacity}
+              {fuel?.current ?? "N/A"} / {data.fuel.capacity}
             </span>
           </div>
           <button
             className="ship-state__item-button"
             onClick={handleClickRefuel}
             disabled={
-              isFull || isDocked === "IN_ORBIT" || isDocked === "IN_TRANSIT"
+              isFull ||
+              statusNavigation === "IN_ORBIT" ||
+              statusNavigation === "IN_TRANSIT"
             }
           >
             Refuel

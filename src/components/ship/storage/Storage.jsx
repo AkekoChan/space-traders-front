@@ -9,31 +9,6 @@ import { useShipContext } from "../../../context/shipContext";
 const Storage = ({ data }) => {
   const { getCargo, cargo } = useShipContext();
 
-  // const [isClicked, setIsClicked] = useState({});
-  // const [quantity, setQuantity] = useState({});
-
-  // const handleSellItem = async (item) => {
-  //   setIsClicked({ ...isClicked, [item.symbol]: !isClicked[item.symbol] });
-  //   setQuantity({ ...quantity, [item.symbol]: 0 });
-
-  //   if (isClicked[item.symbol] && quantity[item.symbol] > 0) {
-  //     try {
-  //       const response = await sellCargo(
-  //         item.symbol,
-  //         data.symbol,
-  //         quantity[item.symbol]
-  //       );
-  //       updateStorage(response.cargo);
-  //     } catch (error) {
-  //       console.error("Error selling item:", error);
-  //     }
-  //   }
-  // };
-
-  // const handleChangeQuantity = (event, item) => {
-  //   setQuantity({ ...quantity, [item.symbol]: event.target.value });
-  // };
-
   useEffect(() => {
     getCargo(data.symbol);
   }, [data.symbol]);

@@ -119,7 +119,7 @@ const Ship = () => {
               ) : activeButton === "market" ? (
                 <Market data={data} />
               ) : (
-                <Shipyard />
+                <Shipyard data={data} />
               )}
             </div>
           </div>

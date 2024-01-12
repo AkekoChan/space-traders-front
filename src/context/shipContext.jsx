@@ -11,6 +11,7 @@ export const ShipContextProvider = ({ children }) => {
   const [fuel, setFuel] = useState();
   const [market, setMarket] = useState([]);
   const [shipyard, setShipyard] = useState();
+  const [statusNavigation, setStatusNavigation] = useState("");
 
   const updateShipData = async (options) => {
     try {
@@ -33,6 +34,7 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
 
+    setStatusNavigation("DOCKED");
     return updateShipData(options);
   };
 
@@ -47,6 +49,7 @@ export const ShipContextProvider = ({ children }) => {
       },
     };
 
+    setStatusNavigation("IN_ORBIT");
     return updateShipData(options);
   };
 
@@ -78,6 +81,10 @@ export const ShipContextProvider = ({ children }) => {
     };
 
     return updateShipData(options);
+  };
+
+  const updateStatusNavigation = (status) => {
+    setStatusNavigation(status);
   };
 
   const refuelShip = async (shipSymbol) => {
@@ -247,8 +254,23 @@ export const ShipContextProvider = ({ children }) => {
       setShipyard(response);
       return response;
     } catch (error) {
+      setShipyard(null);
       console.error(error);
     }
+  };
+
+  const buyShip = async (shipType, waypointSymbol) => {
+    const options = {
+      endpoint: `my/ships`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+      body: `{"shipType":"${shipType}","waypointSymbol":"${waypointSymbol}"}`,
+    };
+    return updateShipData(options);
   };
 
   const contextValue = {
@@ -271,6 +293,11 @@ export const ShipContextProvider = ({ children }) => {
     market,
     getWaypoint,
     buyCargo,
+    shipyard,
+    getShipyard,
+    statusNavigation,
+    updateStatusNavigation,
+    buyShip,
   };
 
   return (

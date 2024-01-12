@@ -9,14 +9,11 @@ import {
 } from "../../../utils";
 
 const NavigateRow = ({ waypoint, shipProps, flightMode, isOrbited }) => {
-  console.log(shipProps);
   const { shipData, shipNavigate, fuel, updateFuel } = useShipContext();
 
   const [flightModeShip, setFlightModeShip] = useState(
     shipData?.flightMode || flightMode
   );
-
-  console.log(shipProps.waypoint);
 
   const [isLocating, setIsLocating] = useState(
     shipData?.nav?.route?.destination?.symbol || shipProps.waypoint

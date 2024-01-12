@@ -11,8 +11,8 @@ import "../ship.css";
 import greaterThan from "../../../assets/icons/greater-than.svg";
 
 const About = ({ data }) => {
-  const { shipData, orbitShip } = useShipContext();
-  const [status, setStatus] = useState(data.nav.status);
+  const { shipData, orbitShip, updateStatusNavigation, statusNavigation } =
+    useShipContext();
   const [flightMode, setFlightMode] = useState(data.nav.flightMode);
   const [arrivalDate, setArrivalDate] = useState({
     time: data.nav.route.arrival,
@@ -32,7 +32,9 @@ const About = ({ data }) => {
 
   useEffect(() => {
     if (shipData) {
-      setStatus(shipData?.nav?.status || data.nav.status || shipData?.status);
+      updateStatusNavigation(
+        shipData?.nav?.status || data.nav.status || shipData?.status
+      );
       setFlightMode(
         shipData?.flightMode || data.nav.flightMode || shipData?.nav?.flightMode
       );
@@ -63,9 +65,9 @@ const About = ({ data }) => {
           <span className="about__flight-mode badge-gray">
             {formatFirstLetterToUpperCase(flightMode)}
           </span>
-          {status === "IN_ORBIT" ? (
+          {statusNavigation === "IN_ORBIT" ? (
             <span className="about__in-orbit badge-gray">In orbit</span>
-          ) : status === "DOCKED" ? (
+          ) : statusNavigation === "DOCKED" ? (
             <span className="about__docked badge-gray">Docked</span>
           ) : (
             <span className="about__in-transit badge-gray">In transit</span>
