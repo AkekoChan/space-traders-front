@@ -10,6 +10,7 @@ export const ShipContextProvider = ({ children }) => {
   const [cargo, setCargo] = useState();
   const [fuel, setFuel] = useState();
   const [market, setMarket] = useState([]);
+  const [shipyard, setShipyard] = useState();
 
   const updateShipData = async (options) => {
     try {
@@ -228,6 +229,24 @@ export const ShipContextProvider = ({ children }) => {
       return response;
     } catch (error) {
       setMarket([]);
+      console.error(error);
+    }
+  };
+
+  const getShipyard = async (systemSymbol, waypointSymbol) => {
+    const options = {
+      endpoint: `systems/${systemSymbol}/waypoints/${waypointSymbol}/shipyard`,
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        Authorization: `Bearer ${userToken}`,
+      },
+    };
+    try {
+      const response = await fetchData(options);
+      setShipyard(response);
+      return response;
+    } catch (error) {
       console.error(error);
     }
   };

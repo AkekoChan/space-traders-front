@@ -44,8 +44,6 @@ const State = ({ data }) => {
     fetchData();
   }, [data.symbol]);
 
-  console.log(isFull);
-
   const handleClickRefuel = async () => {
     if (isFull || isDocked === "IN_ORBIT" || isDocked === "IN_TRANSIT") {
       return;

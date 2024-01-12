@@ -179,12 +179,12 @@ const Market = ({ data }) => {
               ))
             ) : (
               <tr>
-                <td>Loading...</td>
+                <td colSpan={3}>Loading...</td>
               </tr>
             )
           ) : (
             <tr>
-              <td>No Marketplace</td>
+              <td colSpan={3}>No Marketplace</td>
             </tr>
           )}
         </tbody>
